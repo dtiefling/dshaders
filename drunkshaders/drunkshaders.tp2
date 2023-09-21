@@ -1,0 +1,290 @@
+BACKUP ~drunkshaders/backup~
+
+AUTHOR ~drunktiefling~
+VERSION ~0.1~
+README ~drunkshaders/readme.txt~
+
+
+QUICK_MENU
+	ALWAYS_ASK END
+	~BGEE 1.3-like setup (Catmull-Rom everywhere)~ BEGIN 1000 1125 1225 END
+	~BGEE 1.3-like overly simple setup~ BEGIN 1000 1105 1225 END
+	~Recommended color adjustments only~ BEGIN 1000 1315 1415 1505 END
+	~Recommended color adjustments + BGEE 1.3-like setup (C-R everywhere)~ BEGIN 1000 1125 1225 1315 1415 1505 END
+	~Author's choice~ BEGIN 1000 1125 1215 1315 1415 1515 END
+END
+
+
+// Quick menu requires defined, yet empty component 0
+BEGIN ~[Quick menu placeholder]~
+
+
+// Main component
+BEGIN ~Adjustable shaders coded by a drunk tiefling [Main component]~ DESIGNATED 1000
+REQUIRE_PREDICATE GAME_IS ~bgee bg2ee eet iwdee pstee~ ~This mod requires an Enhanced Edition game to be installed.~
+
+COPY_EXISTING ~%MOD_FOLDER%/glsl/fpfont.glsl~ ~override~
+COPY_EXISTING ~%MOD_FOLDER%/glsl/fpdraw.glsl~ ~override~
+COPY_EXISTING ~%MOD_FOLDER%/glsl/fpseam.glsl~ ~override~
+COPY_EXISTING ~%MOD_FOLDER%/glsl/fpsprite.glsl~ ~override~
+COPY_EXISTING ~%MOD_FOLDER%/glsl/fpselect.glsl~ ~override~
+
+
+// Catmull-Rom
+BEGIN ~Use Catmull-Rom interpolation for sprites only~ DESIGNATED 1105
+SUBCOMPONENT ~Scaling filter~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhCatmullRom[ 	]*=[ 	]*[a-z]+;~ ~uhCatmullRom		= true;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Use Catmull-Rom interpolation for maps and sprites only~ DESIGNATED 1115
+SUBCOMPONENT ~Scaling filter~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhCatmullRom[ 	]*=[ 	]*[a-z]+;~ ~uhCatmullRom		= true;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Use Catmull-Rom interpolation in all shaders~ DESIGNATED 1125
+SUBCOMPONENT ~Scaling filter~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhCatmullRom[ 	]*=[ 	]*[a-z]+;~ ~uhCatmullRom		= true;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+
+// Outline changes
+BEGIN ~Disable sprite outlines in non-selected sprites~ DESIGNATED 1205
+SUBCOMPONENT ~Outline changes via shaders~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~outlineSize[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~outlineSize	= 0.0;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Disable sprite outlines in non-selected sprites, make them thinner for selected ones~ DESIGNATED 1215
+SUBCOMPONENT ~Outline changes via shaders~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~outlineSize[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~outlineSize	= 0.0;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+ACTION_FOR_EACH shader IN ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~outlineSize[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~outlineSize	= 1.5;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Disable sprite outlines in all sprites~ DESIGNATED 1225
+SUBCOMPONENT ~Outline changes via shaders~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~outlineSize[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~outlineSize	= 0.0;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+
+// Color fixes
+BEGIN ~Use recommended color adjustments (gamma 1.1, contrast 1.2, brightness +0.1), maps and sprites only~ DESIGNATED 1305
+SUBCOMPONENT ~Color adjustments~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  1.1;~
+		REPLACE_TEXTUALLY ~uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhContrast	=  1.2;~
+		REPLACE_TEXTUALLY ~uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhBright	= +0.1;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Use recommended color adjustments (gamma 1.1, contrast 1.2, brightness +0.1), all shaders~ DESIGNATED 1315
+SUBCOMPONENT ~Color adjustments~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  1.1;~
+		REPLACE_TEXTUALLY ~uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhContrast	=  1.2;~
+		REPLACE_TEXTUALLY ~uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhBright	= +0.1;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+
+// Sharpening
+BEGIN ~Sharpen slightly (+0.25), maps and sprites only~ DESIGNATED 1405
+SUBCOMPONENT ~Sharpening / blur~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  +0.25;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Sharpen slightly (+0.25), all shaders~ DESIGNATED 1415
+SUBCOMPONENT ~Sharpening / blur~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  +0.25;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Sharpen more (+0.50), maps and sprites only~ DESIGNATED 1425
+SUBCOMPONENT ~Sharpening / blur~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  +0.5;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Sharpen more (+0.50), all shaders~ DESIGNATED 1435
+SUBCOMPONENT ~Sharpening / blur~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  +0.5;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Blur slightly (-0.25 sharpen), maps and sprites only~ DESIGNATED 1445
+SUBCOMPONENT ~Sharpening / blur~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  -0.25;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Blur slightly (-0.25 sharpen), all shaders~ DESIGNATED 1455
+SUBCOMPONENT ~Sharpening / blur~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  -0.25;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Blur more (-0.50 sharpen), maps and sprites only~ DESIGNATED 1465
+SUBCOMPONENT ~Sharpening / blur~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  -0.5;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Blur more (-0.50 sharpen), all shaders~ DESIGNATED 1475
+SUBCOMPONENT ~Sharpening / blur~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  -0.5;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+
+// Gamma fixes
+BEGIN ~Lower gamma for fonts shader only (set to 0.8)~ DESIGNATED 1505
+SUBCOMPONENT ~Font fixes~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  0.8;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Lower gamma for fonts and UI (fonts shader: 0.8, UI: 0.9)~ DESIGNATED 1515
+SUBCOMPONENT ~Font fixes~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  0.8;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+ACTION_FOR_EACH shader IN ~override/fpdraw.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  0.9;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+
+// Hue change
+BEGIN ~Make colors warmer (hue +3.0 deg), maps and sprites only~ DESIGNATED 1605
+SUBCOMPONENT ~Hue change~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  +3.0;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Make colors warmer (hue +3.0 deg), all shaders~ DESIGNATED 1615
+SUBCOMPONENT ~Hue change~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  +3.0;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Make colors remarkably warmer (hue +5.0 deg), maps and sprites only~ DESIGNATED 1625
+SUBCOMPONENT ~Hue change~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  +5.0;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Make colors remarkably warmer (hue +5.0 deg), all shaders~ DESIGNATED 1635
+SUBCOMPONENT ~Hue change~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  +5.0;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Make colors colder (hue -3.0 deg), maps and sprites only~ DESIGNATED 1645
+SUBCOMPONENT ~Hue change~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  -3.0;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Make colors colder (hue -3.0 deg), all shaders~ DESIGNATED 1655
+SUBCOMPONENT ~Hue change~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  -3.0;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Make colors remarkably colder (hue -5.0 deg), maps and sprites only~ DESIGNATED 1665
+SUBCOMPONENT ~Hue change~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  -5.0;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Make colors remarkably colder (hue -5.0 deg), all shaders~ DESIGNATED 1675
+SUBCOMPONENT ~Hue change~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  -5.0;~
+	BUT_ONLY_IF_IT_CHANGES
+END
