@@ -1,5 +1,3 @@
-
-
 # drunktiefling's shaders
 
 Readme last updated at version: *0.1*.
@@ -7,8 +5,8 @@ Readme last updated at version: *0.1*.
 This mod aims to use more consistent color operations, sharpening
 and alternative scaling filters via shader files introduced in BG(2)EE.
 
-If this `readme` is too long to read, skip to [Usage](#usage) section
-at very least.
+If this `readme` is too long to read, skip to [Options overview](#options-overview)
+or [Manual settings](#manual-settings) section.
 
 ### License
 
@@ -230,4 +228,3 @@ no use for it with 2.6 patch (in tested scenarios it
 
 This mod aims to use more consistent color operations, sharpening
 and alternative scaling filters via shader files introduced in BG(2)EE.
-
