@@ -1,6 +1,6 @@
 # drunktiefling's shaders
 
-Readme last updated at version: *0.1*.
+Readme last updated at version: *0.1*+git.
 
 This mod aims to use more consistent color operations, sharpening
 and alternative scaling filters via shader files introduced in BG(2)EE.
@@ -22,7 +22,7 @@ on the screen other than videos. Every setting is optional. This includes:
 * Hue correction by rotation of linear RGB matrix
   (using YIQ-like approach rather than HSV).
 * Saturation correction.
-* Image sharpening with 3x3 kernel.
+* Gausian image sharpening based on 4x4 surrounding.
 * Catmull-Rom interpolation for scaling.
 * Removal or change of the outlines for default/selected sprites
   (BGEE v1.3-style).
