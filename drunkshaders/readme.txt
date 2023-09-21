@@ -5,8 +5,9 @@ Readme last updated at version: *0.1*.
 This mod aims to use more consistent color operations, sharpening
 and alternative scaling filters via shader files introduced in BG(2)EE.
 
-If this `readme` is too long to read, skip to [Options overview](#options-overview)
-or [Manual settings](#manual-settings) section.
+If this `readme` is too long to read, skip to
+[Options overview](#options-overview), [Manual settings](#manual-settings),
+or [Preview](#preview) section.
 
 ### License
 
@@ -217,6 +218,40 @@ Note: this mod **doesn't include** `fptone.glsl`, as I have found
 no use for it with 2.6 patch (in tested scenarios it
 **doesn't do anything** with disabled icons, time stop or pause).
 
+## Preview
+
+ - Scaling:
+	 - [Default (no mod)](https://github.com/dtiefling/dshaders/assets/145703648/5a429ab9-cc2a-4553-b3ea-d389abef264c)
+	 - [Nearest neighbor (no mod)](https://github.com/dtiefling/dshaders/assets/145703648/79aec940-22d5-4032-a9a0-59c0055d73e8)
+	 - [BGEE 1.3 (obviously no mod)](https://github.com/dtiefling/dshaders/assets/145703648/5492e51e-4def-442c-8cf0-49c2b5c5c52e)
+	 - [Empty mod setting](https://github.com/dtiefling/dshaders/assets/145703648/1a5d24f6-32c4-4102-b1ea-e160ec557207)
+	 - [Catmull-Rom for sprites](https://github.com/dtiefling/dshaders/assets/145703648/8f028e21-80bf-4109-a732-810a8ccb14dc)
+	 - [Catmull-Rom everywhere](https://github.com/dtiefling/dshaders/assets/145703648/56d09666-076d-4390-8300-48f1e158ccfc)
+ - Outlines:
+	 - [Default (no mod)](https://github.com/dtiefling/dshaders/assets/145703648/5a429ab9-cc2a-4553-b3ea-d389abef264c)
+	 - [Empty mod setting](https://github.com/dtiefling/dshaders/assets/145703648/1a5d24f6-32c4-4102-b1ea-e160ec557207)
+	 - [BGEE 1.3 (obviously no mod)](https://github.com/dtiefling/dshaders/assets/145703648/5492e51e-4def-442c-8cf0-49c2b5c5c52e)
+	 - [Disabled via shaders](https://github.com/dtiefling/dshaders/assets/145703648/a9c92379-0cfa-4359-9c73-57c73f4132d3)
+ - Selection outlines:
+	 - [Default (no mod)](https://github.com/dtiefling/dshaders/assets/145703648/64eb68d0-f580-49d4-a2a1-166fd407ac0f)
+	 - [Empty mod setting](https://github.com/dtiefling/dshaders/assets/145703648/8294556f-97d1-49d1-be0a-174c35e8b94f)
+	 - [Thinner selection outlines](https://github.com/dtiefling/dshaders/assets/145703648/0b119bc4-380b-4914-849b-57c078a84477)
+ - Colors:
+	 - [Empty mod setting](https://github.com/dtiefling/dshaders/assets/145703648/1a5d24f6-32c4-4102-b1ea-e160ec557207)
+	 - [Color changes](https://github.com/dtiefling/dshaders/assets/145703648/1ed9298a-fb63-4937-b1e0-d570e9a5febf)
+	 - [Color changes + Catmull-Rom](https://github.com/dtiefling/dshaders/assets/145703648/5d54a0b8-afd7-43db-b6da-caf2d189c89a)
+	 - ["Author's choice" (also no outlines without selections)](https://github.com/dtiefling/dshaders/assets/145703648/04eeb0ab-5834-4b7e-943a-4c8122cfaa0d)
+ - BGEE 1.3 imitation:
+	 - Actual [BGEE 1.3 (obviously no mod)](https://github.com/dtiefling/dshaders/assets/145703648/5492e51e-4def-442c-8cf0-49c2b5c5c52e)
+	 - BGEE 1.3-like overly simple setup, which means
+	   [Catmull-Rom for sprites](https://github.com/dtiefling/dshaders/assets/145703648/8f028e21-80bf-4109-a732-810a8ccb14dc)
+	 - [Catmull-Rom everywhere](https://github.com/dtiefling/dshaders/assets/145703648/56d09666-076d-4390-8300-48f1e158ccfc)
+	 - And since the old games made it possible to adjust image properties,
+	   consider [Color changes + Catmull-Rom](https://github.com/dtiefling/dshaders/assets/145703648/5d54a0b8-afd7-43db-b6da-caf2d189c89a)
+
+
+[](https://github.com/dtiefling/dshaders/assets/145703648/04eeb0ab-5834-4b7e-943a-4c8122cfaa0d)
+
 ### Resources
 
 * [Shader Pack](https://github.com/Argent77/A7-LightingPackEE) by Argent77
@@ -228,3 +263,4 @@ no use for it with 2.6 patch (in tested scenarios it
 
 This mod aims to use more consistent color operations, sharpening
 and alternative scaling filters via shader files introduced in BG(2)EE.
+
