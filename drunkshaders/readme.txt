@@ -1,6 +1,6 @@
 # drunktiefling's shaders
 
-Readme last updated at version: *0.1*+git.
+Readme last updated at version: *0.2*.
 
 This mod aims to use more consistent color operations, sharpening
 and alternative scaling filters via shader files introduced in BG(2)EE.
@@ -107,7 +107,6 @@ anything.
    but it was there only for sprites. With this mod, you can apply it in
    more places (which makes a remarkable difference for maps).
 	 - **Use Catmull-Rom interpolation for sprites only**
-	 - **Use Catmull-Rom interpolation for maps and sprites only**
 	 - **Use Catmull-Rom interpolation in all shaders**
 	   (this involves UI and fonts too).
  - *Outline changes* - the default settings imitate BG(2)EE 2.6 behavior.
@@ -122,44 +121,56 @@ anything.
 	 - **Disable sprite outlines in all sprites** - as it was in BGEE 1.3.
  - *Color fixes*
 	 - **Use recommended color adjustments (gamma 1.1, contrast 1.2,
-	   brightness +0.1), maps and sprites only** - similar to the recommended
-	   setting of *Shader Pack*, but only for the main content of the game
-	   (no UI or fonts). UI mods can design any colors they want to, so
-	   the need to adjust it might be reduced. Also, this settings avoids
-	   gamma increase for fonts.
+	   brightness +0.1), sprites only** - similar to the recommended
+	   setting of *Shader Pack*, but only for the sprites (no maps, UI
+	   or fonts). Remarkably, this settings avoids gamma increase
+	   for all text (also rendered alongside UI).
 	 - **Use recommended color adjustments (gamma 1.1, contrast 1.2,
 	   brightness +0.1), all shaders** - just similar to the recommended
 	   setting of *Shader Pack*.
  - *Sharpening / blur*
-	 - **Sharpen slightly (+0.25), maps and sprites only** -
-	   recommended if you don't want to touch UI.
+	 - **Sharpen slightly (+0.25), sprites only** -
+	   recommended if you don't want to touch maps and UI.
 	 - **Sharpen slightly (+0.25), all shaders** -
 	   recommended if you are alright with changing everything on the screen.
-	 - **Sharpen more (+0.50), maps and sprites only**
+	 - **Sharpen more (+0.50), sprites only**
 	 - **Sharpen more (+0.50), all shaders**
-	 - **Blur slightly (-0.25 sharpen), maps and sprites only**
+	 - **Blur slightly (-0.25 sharpen), sprites only**
 	 - **Blur slightly (-0.25 sharpen), all shaders**
-	 - **Blur more (-0.50 sharpen), maps and sprites only**
+	 - **Blur more (-0.50 sharpen), sprites only**
 	 - **Blur more (-0.50 sharpen), all shaders**
  - *Font fixes* - the main shader responsible for fonts is `fpfont.glsl`,
    but some pieces of text are rendered by `fpdraw.glsl` alongside the UI.
    Text is known to be easier to read with somehat lower gamma (such as 0.8),
-   but such a low setting might be suboptimal for the UI. As such,
-   the suggested options are:
+   but such a low setting might be suboptimal for the UI.
 	 - **Lower gamma for fonts shader only (set to 0.8)**
-	 - **Lower gamma for fonts and UI (fonts shader: 0.8, UI: 0.9)**
+	 - **Lower gamma for fonts shader (set to 0.8) + use color-based hack
+	   to lower fonts gamma in some UIs (Dragonspear UI++, Infinity UI++))**
+	   Some pieces of text, such as item counts on stacks, are rendered
+	   by the UI shader rather than font shader. So they use the same code
+	   as UI and object tiles on the maps, which should have the same color
+	   settings as maps themselves. Which makes it hard to separate this
+	   case and apply lower gamma.
+	   In UI mods such as Infinity UI++, this issue is especially visible,
+	   as the pieces of text are just presented in easily scalable font
+	   rather than bitmaps known from the original games. But color of such
+	   fonts was easy enough to separate to match the right pixels by color.
+	   It barely touches anything else in the UI, and in the case of object
+	   tiles the transition around potentially mismatched pixels is smooth.
+	   It's a controversial choice and a total hack, but that's how I play
+	   this mod.
  - *Hue change* - initially, some change seemed to be beneficial.
    However, after going through more areas, I believe that no change should
    be included in the recommended setups. If you want to play with it,
    just choose an option for this subcomponent specifically
    (or edit the files).
-	 - **Make colors warmer (hue +3.0 deg), maps and sprites only**
+	 - **Make colors warmer (hue +3.0 deg), sprites only**
 	 - **Make colors warmer (hue +3.0 deg), all shaders**
-	 - **Make colors remarkably warmer (hue +5.0 deg), maps and sprites only**
+	 - **Make colors remarkably warmer (hue +5.0 deg), sprites only**
 	 - **Make colors remarkably warmer (hue +5.0 deg), all shaders**
-	 - **Make colors colder (hue -3.0 deg), maps and sprites only**
+	 - **Make colors colder (hue -3.0 deg), sprites only**
 	 - **Make colors colder (hue -3.0 deg), all shaders**
-	 - **Make colors remarkably colder (hue -5.0 deg), maps and sprites only**
+	 - **Make colors remarkably colder (hue -5.0 deg), sprites only**
 	 - **Make colors remarkably colder (hue -5.0 deg), all shaders**
 
 ## Manual settings
@@ -184,8 +195,14 @@ from [Argent77's research](https://argent77.github.io/A7-LightingPackEE/).
                       on stacks).
 * `fpseam.glsl`     - Map background.
 * `fpdraw.glsl`     - User interface including inventory (and item counts
-                    on stacks, which are **not affected** by `fpfont.glsl`).
+                      on stacks, which are **not affected** by `fpfont.glsl`).
                       Also the fog of war.
+                      Also objects in BG2EE maps that have separate tiles,
+                      such as bathtub of Aran Linvail. As such, you should
+                      keep the color correction settings similar to
+                      `fpseam.glsl`.
+* `fptone.glsl`       - Object tiles on a map when the game is paused.
+                        Just keep it similar to `fpdraw.glsl`.
 * `fpsprite.glsl`   - Character sprites, software cursors, ground icons, ...
 * `fpselect.glsl`   - Some of the content from `fpsprite.glsl` when
                       it's selected.
@@ -208,15 +225,12 @@ Otherwise, some settings I would recommend for most displays are:
   the whole screen. This shader describes the small digits of stack/use
   counts of items, so gamma lower than 1.0 might make it easier to read.
 *  `fpsprite.glsl` and `fpselect.glsl` contain extra parameter, that can
-  be used to disable normal and selected sprite outlines, respectively.
+  be used to disable or modify normal and selected sprite outlines,
+  respectively.
   The attached setup disables black outlines (`fpsprite.glsl`), yet keeps
   the colored versions on selection.
   For the most BGEE v1.3-like experience (some people seem to miss it),
   make sure to keep Catmull-Rom setting enabled and disable all outlines.
-
-Note: this mod **doesn't include** `fptone.glsl`, as I have found
-no use for it with 2.6 patch (in tested scenarios it
-**doesn't do anything** with disabled icons, time stop or pause).
 
 ## Preview
 
@@ -260,7 +274,3 @@ no use for it with 2.6 patch (in tested scenarios it
 * [OpenGL docs](https://www.khronos.org/opengl/wiki/)
 * Pluma - The MATE text editordrunktiefling's shaders
 * https://gist.github.com/TheRealMJP/c83b8c0f46b63f3a88a5986f4fa982b1
-
-This mod aims to use more consistent color operations, sharpening
-and alternative scaling filters via shader files introduced in BG(2)EE.
-
