@@ -11,7 +11,9 @@ const lowp float uhBright	=  0.0;	// brightness offset (0.0 is default, +-0.005 
 const lowp float uhSat		=  1.0;	// saturation multiplier (1.0 is default, play with +-20% steps to see difference)
 const lowp float uhHueDeg	=  0.0;	// hue rotation in YIQ space in degrees, play with +-5deg steps, 180deg means opposite
 
-const mediump float outlineSize	= 3.5;	// up to 3.5; 0.0 to disable; default for fpsprite: 1.5, default for fpselect: 3.5; for other files: DON'T SET
+const mediump float uhOutlineSize	= 3.5;	// up to 3.5; 0.0 to disable; default for fpsprite: 1.5, default for fpselect: 3.5; for other files: DON'T SET
+
+const lowp float uhFontHackGamma	= 0.0;	// dirty hack for UI mods that affect stack count rendering (Dragonspear UI++, Infinity UI); fpdraw-only; 0.0 means disabled; usually DON'T SET
 
 /* - CHANGING THE CODE BELOW MIGHT REQUIRE GLSL KNOWLEDGE / BREAK THE GAME - */
 /* ------------------------------------------------------------------------- */
@@ -193,7 +195,7 @@ lowp vec3 uhYIQRotate(in lowp vec3 color)
 	return uhHueM * color;
 }
 
-lowp vec4 uhMakeFragColor(in lowp vec3 rgb, in lowp float alpha)
+lowp vec4 uhMakeFragColor(in lowp vec3 rgb, in lowp float alpha, in lowp float gamma)
 {
 	lowp vec3 color = uhYIQRotate(rgb);
 	lowp float grey = dot(color, rgbWeights);
@@ -205,7 +207,7 @@ lowp vec4 uhMakeFragColor(in lowp vec3 rgb, in lowp float alpha)
 	#endif
 	
 	color = uhContrast * (color - 0.5) + 0.5 + uhBright;
-	color = pow(color, vec3(uhGamma));
+	color = pow(color, vec3(gamma));
 
 	return vec4(uhFromLinear(color), alpha);
 }
@@ -217,7 +219,7 @@ lowp vec4 uhMakeFragColor(in lowp vec3 rgb, in lowp float alpha)
 mediump vec2 uhOutlineData(in mediump vec2 uVTc, in ivec2 posUb)
 {
 	bool inside[OUTLINE_MAT_COLS * OUTLINE_MAT_COLS];
-	mediump float dist2 = outlineSize * outlineSize;
+	mediump float dist2 = uhOutlineSize * uhOutlineSize;
 	lowp float maxAlpha = 0.0;
 	for (int y = -OUTLINE_SEARCH_RADIUS; y <= OUTLINE_SEARCH_RADIUS; ++y)
 	{
@@ -246,64 +248,104 @@ mediump vec2 uhOutlineData(in mediump vec2 uVTc, in ivec2 posUb)
 }
 
 
+lowp float uhBoundMul(in lowp float x, in lowp float low, in lowp float high, in lowp float margin)
+{
+	if(x <= low - margin)
+	{
+		return 0.0;
+	}
+	else if(x < low)
+	{
+		return (low - x) / margin;
+	}
+	else if(x <= high)
+	{
+		return 1.0;
+	}
+	else if(x < high + margin)
+	{
+		return (high + margin - x) / margin;
+	}
+	else
+	{
+		return 0.0;
+	}
+}
+
+
 void main()
 {
 	mediump vec2 iUTcScale = 1.0 / uTcScale;
-	mediump vec2 uVTc = vTc * iUTcScale;
-	mediump vec2 posFr = fract(uVTc);
+	mediump vec2 uVTc = vTc * iUTcScale - 0.5;
 	ivec2 posUb = uVTc;
+	mediump vec2 posFr = uVTc - posUb;
 
 	lowp vec4 lSample = texture(uTex, vTc);
 	lowp vec3 region[16] = uhFetchRegion(posUb);
+	lowp float gamma = uhGamma;
+
+	bool borderT = (posUb.y <= 0);
+	bool borderB = (posUb.y >= iUTcScale.y - 2);
+	bool borderB2 = (posUb.y >= iUTcScale.y - 1);
+	bool borderL = (posUb.x <= 0);
+	bool borderR = (posUb.x >= iUTcScale.x - 2);
+	bool borderR2 = (posUb.x >= iUTcScale.x - 1);
 
 	#if HAS_VREF
-	ivec2 texCoordTileLoc = mod(uVTc - ivec2(vRef * iUTcScale), 64);
-	if (texCoordTileLoc.y == 0)
+	ivec2 texCoordTileLoc = (posUb - ivec2(vRef * iUTcScale - 0.5)) & 63;
+	borderT |= (texCoordTileLoc.y == 0);
+	borderB |= (texCoordTileLoc.y >= 62);
+	borderB2 |= (texCoordTileLoc.y >= 63);
+	borderL |= (texCoordTileLoc.x == 0);
+	borderR |= (texCoordTileLoc.x >= 62);
+	borderR2 |= (texCoordTileLoc.x >= 63);
+	#endif
+
+	if (borderT)
 	{
 		region[0 * 4 + 0] = region[1 * 4 + 0];
 		region[0 * 4 + 1] = region[1 * 4 + 1];
 		region[0 * 4 + 2] = region[1 * 4 + 2];
 		region[0 * 4 + 3] = region[1 * 4 + 3];
 	}
-	if (texCoordTileLoc.y >= 63)
+	if (borderB2)
 	{
 		region[2 * 4 + 0] = region[1 * 4 + 0];
 		region[2 * 4 + 1] = region[1 * 4 + 1];
 		region[2 * 4 + 2] = region[1 * 4 + 2];
 		region[2 * 4 + 3] = region[1 * 4 + 3];
 	}
-	if (texCoordTileLoc.y >= 62)
+	if (borderB)
 	{
 		region[3 * 4 + 0] = region[2 * 4 + 0];
 		region[3 * 4 + 1] = region[2 * 4 + 1];
 		region[3 * 4 + 2] = region[2 * 4 + 2];
 		region[3 * 4 + 3] = region[2 * 4 + 3];
 	}
-	if (texCoordTileLoc.x == 0)
+	if (borderL)
 	{
 		region[0 * 4 + 0] = region[0 * 4 + 1];
 		region[1 * 4 + 0] = region[1 * 4 + 1];
 		region[2 * 4 + 0] = region[2 * 4 + 1];
 		region[3 * 4 + 0] = region[3 * 4 + 1];
 	}
-	if (texCoordTileLoc.x >= 63)
+	if (borderR2)
 	{
 		region[0 * 4 + 2] = region[0 * 4 + 1];
 		region[1 * 4 + 2] = region[1 * 4 + 1];
 		region[2 * 4 + 2] = region[2 * 4 + 1];
 		region[3 * 4 + 2] = region[3 * 4 + 1];
 	}
-	if (texCoordTileLoc.x >= 62)
+	if (borderR)
 	{
 		region[0 * 4 + 3] = region[2 * 4 + 2];
 		region[1 * 4 + 3] = region[2 * 4 + 2];
 		region[2 * 4 + 3] = region[2 * 4 + 2];
 		region[3 * 4 + 3] = region[2 * 4 + 2];
 	}
-	#endif
 
 	lowp vec3 output;
-	if	(uhCatmullRom && !(VCOLOR_MUL == 2 && all(equal(region[5], vec3(0.0)))))
+	if (uhCatmullRom && !(VCOLOR_MUL == 2 && all(equal(region[4 * 2 + 2], vec3(0.0)))))
 	{
 		output = uhCatmullRomInterp(region, posFr);
 	}
@@ -324,18 +366,29 @@ void main()
 	#elif VCOLOR_MUL == 2
 	output *= uhToLinear(vColor.rgb);
 	lSample.a *= vColor.a;
+	lSample.a *= lSample.a;
 	#endif
 
-	if (outlineSize <= 1.0)
+	if (uhFontHackGamma > 0.0 && uhFontHackGamma != uhGamma)
 	{
-		gl_FragColor = uhMakeFragColor(output, lSample.a);
+		lowp vec3 lRGB = uhToLinear(lSample.rgb);
+		lowp float fontHackMatch = 1.0;
+		fontHackMatch *= uhBoundMul(lRGB[0], 0.07, 1.00, 0.1);
+		fontHackMatch *= uhBoundMul(lRGB[1] / lRGB[0], 0.84, 1.05, 0.1);
+		fontHackMatch *= uhBoundMul(lRGB[2] / lRGB[0], 0.43, 0.63, 0.1);
+		gamma = uhFontHackGamma * fontHackMatch + uhGamma * (1.0 - fontHackMatch);
+	}
+
+	if (uhOutlineSize <= 1.0)
+	{
+		gl_FragColor = uhMakeFragColor(output, lSample.a, gamma);
 		return;
 	}
 
 	mediump vec2 outlineData = uhOutlineData(uVTc, posUb);
 	mediump float minDist = max(0.70710678, outlineData[0]);
-	mediump float outlineAlpha = (1.0 - pow((minDist - 0.70710678) / (outlineSize - 0.70710678) + 0.00001, 0.33333333)) * (outlineData[1] + 3.0) * 0.25;
+	mediump float outlineAlpha = (1.0 - pow((minDist - 0.70710678) / (uhOutlineSize - 0.70710678) + 0.00001, 0.33333333)) * (outlineData[1] + 3.0) * 0.25;
 	output = (uhToLinear(OUTLINE_COLOR) * outlineAlpha * (1.0 - lSample.a) + output * lSample.a) / (outlineAlpha * (1.0 - lSample.a) + lSample.a);
 	lSample.a = 1.0 - (1.0 - lSample.a) * (1.0 - outlineAlpha);
-	gl_FragColor = uhMakeFragColor(output, lSample.a);
+	gl_FragColor = uhMakeFragColor(output, lSample.a, gamma);
 }
