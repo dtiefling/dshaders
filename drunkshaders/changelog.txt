@@ -1,5 +1,7 @@
-(git)
+(0.2.3)
 Added changelog.
+Fixed alpha adjustment for fpdraw-like shaders.
+Lowered gamma change in the recommended settings (+2% instead of +10%).
 
 (0.2.2)
 Fixed issues specific for Windows VM.

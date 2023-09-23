@@ -362,8 +362,7 @@ void main()
 	outColor = uhToLinear(vColor.rgb);
 	#elif VCOLOR_MUL == 2
 	outColor *= uhToLinear(vColor.rgb);
-	lSample.a *= vColor.a;
-	lSample.a *= lSample.a;
+	lSample.a *= vColor.a * vColor.a;
 	#endif
 
 	if (uhFontHackGamma > 0.0 && uhFontHackGamma != uhGamma)

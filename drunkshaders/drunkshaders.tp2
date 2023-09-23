@@ -88,23 +88,23 @@ END
 
 
 // Color fixes
-BEGIN ~Use recommended color adjustments (gamma 1.1, contrast 1.2, brightness +0.1), sprites only~ DESIGNATED 1305
+BEGIN ~Use recommended color adjustments (gamma +2%, contrast +20%, brightness +10%), sprites only~ DESIGNATED 1305
 SUBCOMPONENT ~Color adjustments~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  1.1;~
+		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  1.02;~
 		REPLACE_TEXTUALLY ~uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhContrast	=  1.2;~
 		REPLACE_TEXTUALLY ~uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhBright	= +0.1;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
-BEGIN ~Use recommended color adjustments (gamma 1.1, contrast 1.2, brightness +0.1), all shaders~ DESIGNATED 1315
+BEGIN ~Use recommended color adjustments (gamma +2%, contrast +20%, brightness +10%), all shaders~ DESIGNATED 1315
 SUBCOMPONENT ~Color adjustments~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  1.1;~
+		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  1.02;~
 		REPLACE_TEXTUALLY ~uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhContrast	=  1.2;~
 		REPLACE_TEXTUALLY ~uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhBright	= +0.1;~
 	BUT_ONLY_IF_IT_CHANGES

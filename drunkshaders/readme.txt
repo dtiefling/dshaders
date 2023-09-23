@@ -120,13 +120,13 @@ anything.
 	 consistent with other objects in the game.
 	 - **Disable sprite outlines in all sprites** - as it was in BGEE 1.3.
  - *Color fixes*
-	 - **Use recommended color adjustments (gamma 1.1, contrast 1.2,
-	   brightness +0.1), sprites only** - similar to the recommended
+	 - **Use recommended color adjustments (gamma +2%, contrast +20%,
+	   brightness +10%), sprites only** - similar to the recommended
 	   setting of *Shader Pack*, but only for the sprites (no maps, UI
 	   or fonts). Remarkably, this settings avoids gamma increase
 	   for all text (also rendered alongside UI).
-	 - **Use recommended color adjustments (gamma 1.1, contrast 1.2,
-	   brightness +0.1), all shaders** - just similar to the recommended
+	 - **Use recommended color adjustments (gamma +2%, contrast +20%,
+	   brightness +10%), all shaders** - just similar to the recommended
 	   setting of *Shader Pack*.
  - *Sharpening / blur*
 	 - **Sharpen slightly (+0.25), sprites only** -
