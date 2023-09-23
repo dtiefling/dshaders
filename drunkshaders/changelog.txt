@@ -8,7 +8,7 @@ Fixed issues specific for Windows VM.
 Oops, wrong templates were included in 0.2. Fixed.
 
 (0.2)
-Fixed object tiles on the map.
+Fixed object tiles on the map (identified by @Parys).
 Disabled options that would apply different settings to UI and map.
 Created an ugly fix for fonts gamma in the author's setup (Infinity UI++).
 
