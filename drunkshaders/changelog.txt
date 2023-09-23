@@ -1,0 +1,37 @@
+(git)
+Added changelog.
+
+(0.2.2)
+Fixed issues specific for Windows VM.
+
+(0.2.1)
+Oops, wrong templates were included in 0.2. Fixed.
+
+(0.2)
+Fixed object tiles on the map.
+Disabled options that would apply different settings to UI and map.
+Created an ugly fix for fonts gamma in the author's setup (Infinity UI++).
+
+(0.1)
+Unified all the shaders.
+Reimplemented outlines, added option to control their size.
+Expanded WeiDU script to perform some patches through user dialog or choose
+a preset via quick menu.
+Heavily updated readme, including screenshots.
+
+
+Older changes, as traced in the Beamdog forums thread:
+
+(2023-09-16)
+WeiDUized the contents. Created readme.
+
+Fixed pixel shifts for Catmull-Rom so it looks properly for sprites.
+Added options to disable outlines.
+
+(2023-09-15)
+Prepared some install on Windows VM to test compatibility there too.
+Fixed the related memory leaks and incompatible code.
+Pointed out by @argent77.
+
+Added initial Catmull-Rom implementation.
+Sugested by @Allanon81
