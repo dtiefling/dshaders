@@ -2,7 +2,7 @@
 /* --------- FEEL FREE TO CHANGE THE NUMBERS AND true/false VALUES --------- */
 /* ---------- (the settings were introduced by drunkshaders mod) ----------- */
 
-const bool uhCatmullRom		= true;
+const bool uhCatmullRom		= false;
 
 const lowp float uhSharpen	=  0.0;	// 0.0 - default, positive - sharpen, negative - blur, play with +-0.2 steps to see difference
 const lowp float uhGamma	=  1.0;	// gamma correction (1.0 is default, play with +-20% steps to see difference)
@@ -268,6 +268,19 @@ lowp float uhBoundMul(in lowp float x, in lowp float low, in lowp float high, in
 	}
 }
 
+lowp float uhRGBDist(in lowp vec3 x, in lowp vec3 y)
+{
+	lowp float rMean = (x.r + y.r) * 0.5;
+	lowp vec3 diff = x - y;
+	diff *= diff;
+	return sqrt(diff.r * (2.0 + rMean) + diff.g * 4.0 + diff.b * (3.0 - rMean));
+}
+
+lowp float uhRelDist(in lowp vec3 x, in lowp vec3 y)
+{
+	return uhRGBDist(x, y) / (max(uhRGBDist(x, vec3(0.0)), uhRGBDist(vec3(0.0), y)) + 0.00001);
+}
+
 
 void main()
 {
@@ -276,7 +289,6 @@ void main()
 	ivec2 posUb = ivec2(uVTc);
 	mediump vec2 posFr = uVTc - posUb;
 
-	lowp vec4 lSample = texture(uTex, vTc);
 	lowp vec3 region[16] = uhFetchRegion(posUb);
 	lowp float gamma = uhGamma;
 
@@ -286,6 +298,65 @@ void main()
 	bool borderL = (posUb.x <= 0);
 	bool borderR = (posUb.x >= iUTcScale.x - 2);
 	bool borderR2 = (posUb.x >= iUTcScale.x - 1);
+	bool heuristicBorder = false;
+
+	if (all(equal(vColor, vec4(1.0))))
+	{
+		if (
+				uhRelDist(region[0 * 4 + 0], region[1 * 4 + 0]) +
+				uhRelDist(region[0 * 4 + 1], region[1 * 4 + 1]) +
+				uhRelDist(region[0 * 4 + 2], region[1 * 4 + 2]) +
+				uhRelDist(region[0 * 4 + 3], region[1 * 4 + 3]) >= 2.0)
+		{
+			heuristicBorder = true;
+			borderT = true;
+		}
+		if (
+				uhRelDist(region[1 * 4 + 0], region[2 * 4 + 0]) +
+				uhRelDist(region[1 * 4 + 1], region[2 * 4 + 1]) +
+				uhRelDist(region[1 * 4 + 2], region[2 * 4 + 2]) +
+				uhRelDist(region[1 * 4 + 3], region[2 * 4 + 3]) >= 2.0)
+		{
+			heuristicBorder = true;
+			borderB = true;
+		}
+		if (
+				uhRelDist(region[2 * 4 + 0], region[3 * 4 + 0]) +
+				uhRelDist(region[2 * 4 + 1], region[3 * 4 + 1]) +
+				uhRelDist(region[2 * 4 + 2], region[3 * 4 + 2]) +
+				uhRelDist(region[2 * 4 + 3], region[3 * 4 + 3]) >= 2.0)
+		{
+			heuristicBorder = true;
+			borderB2 = true;
+		}
+		if (
+				uhRelDist(region[0 * 4 + 0], region[0 * 4 + 1]) +
+				uhRelDist(region[1 * 4 + 0], region[1 * 4 + 1]) +
+				uhRelDist(region[2 * 4 + 0], region[2 * 4 + 1]) +
+				uhRelDist(region[3 * 4 + 0], region[3 * 4 + 1]) > 2.0)
+		{
+			heuristicBorder = true;
+			borderL = true;
+		}
+		if (
+				uhRelDist(region[0 * 4 + 1], region[0 * 4 + 2]) +
+				uhRelDist(region[1 * 4 + 1], region[1 * 4 + 2]) +
+				uhRelDist(region[2 * 4 + 1], region[2 * 4 + 2]) +
+				uhRelDist(region[3 * 4 + 1], region[3 * 4 + 2]) >= 2.0)
+		{
+			heuristicBorder = true;
+			borderR = true;
+		}
+		if (
+				uhRelDist(region[0 * 4 + 2], region[0 * 4 + 3]) +
+				uhRelDist(region[1 * 4 + 2], region[1 * 4 + 3]) +
+				uhRelDist(region[2 * 4 + 2], region[2 * 4 + 3]) +
+				uhRelDist(region[3 * 4 + 2], region[3 * 4 + 3]) >= 2.0)
+		{
+			heuristicBorder = true;
+			borderR2 = true;
+		}
+	}
 
 	#if HAS_VREF
 	ivec2 texCoordTileLoc = (posUb - ivec2(vRef * iUTcScale - 0.5)) & 63;
@@ -340,9 +411,17 @@ void main()
 		region[3 * 4 + 3] = region[2 * 4 + 2];
 	}
 
+	lowp vec4 lSample = texture(uTex, vTc);
 	lowp vec3 outColor;
 
-	if (uhCatmullRom && !(VCOLOR_MUL == 2 && all(equal(region[4 * 2 + 2], vec3(0.0)))))
+	if (heuristicBorder)
+	{
+		lowp vec4 texel = texelFetch(uTex, posUb + ivec2(posFr + 0.5), 0);
+		lSample.rgb = texel.rgb;
+		lSample.a = min(lSample.a, texel.a);
+	}
+
+	if (uhCatmullRom && !(VCOLOR_MUL == 2 && all(equal(region[2 * 4 + 2], vec3(0.0)))) && !(heuristicBorder && lSample.a < 0.0625))
 	{
 		outColor = uhCatmullRomInterp(region, posFr);
 	}
@@ -351,10 +430,15 @@ void main()
 		outColor = uhToLinear(lSample.rgb);
 	}
 
-	if (uhSharpen != 0.0)
+	if (uhSharpen != 0.0 && !heuristicBorder)
 	{
 		lowp vec3 average = uhGaussianBlur(region, posFr, 2.5);
 		outColor = outColor * (1.0 + uhSharpen) - average * uhSharpen;
+	}
+
+	if (lSample.a < 0.0625 && VCOLOR_MUL != 1)
+	{
+		outColor *= lSample.a * 16.0;
 	}
 
 	#if VCOLOR_MUL == 1
@@ -362,7 +446,7 @@ void main()
 	outColor = uhToLinear(vColor.rgb);
 	#elif VCOLOR_MUL == 2
 	outColor *= uhToLinear(vColor.rgb);
-	lSample.a *= vColor.a * vColor.a;
+	lSample.a *= vColor.a;
 	#endif
 
 	if (uhFontHackGamma > 0.0 && uhFontHackGamma != uhGamma)
@@ -383,7 +467,7 @@ void main()
 
 	mediump vec2 outlineData = uhOutlineData(uVTc + 0.5, posUb);
 	mediump float minDist = max(0.70710678, outlineData[0]);
-	mediump float outlineAlpha = (1.0 - pow((minDist - 0.70710678) / (uhOutlineSize - 0.70710678) + 0.00001, 0.33333333)) * (outlineData[1] + 3.0) * 0.25;
+	mediump float outlineAlpha = (1.0 - pow(max(0.0, (minDist - 0.70710678) / (uhOutlineSize - 0.70710678)), 0.33333333)) * (outlineData[1] + 3.0) * 0.25;
 	outColor = (uhToLinear(OUTLINE_COLOR) * outlineAlpha * (1.0 - lSample.a) + outColor * lSample.a) / (outlineAlpha * (1.0 - lSample.a) + lSample.a);
 	lSample.a = 1.0 - (1.0 - lSample.a) * (1.0 - outlineAlpha);
 	gl_FragColor = uhMakeFragColor(outColor, lSample.a, gamma);

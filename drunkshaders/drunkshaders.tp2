@@ -1,7 +1,7 @@
 BACKUP ~drunkshaders/backup~
 
 AUTHOR ~drunktiefling~
-VERSION ~0.2.3~
+VERSION ~0.2.4~
 README ~drunkshaders/readme.txt~
 
 
@@ -11,8 +11,10 @@ QUICK_MENU
 	~BGEE 1.3-like overly simple setup~ BEGIN 1000 1105 1225 END
 	~Recommended color adjustments only~ BEGIN 1000 1315 1415 1505 END
 	~Recommended color adjustments + BGEE 1.3-like setup (C-R everywhere)~ BEGIN 1000 1125 1225 1315 1415 1505 END
-	~Author's choice~ BEGIN 1000 1125 1215 1315 1415 1505 END
-	~Author's choice for Infinity UI++~ BEGIN 1000 1125 1215 1315 1415 1515 END
+	~Moderate color adjustments only~ BEGIN 1000 1314 1415 1505 END
+	~Moderate color adjustments + BGEE 1.3-like setup (C-R everywhere)~ BEGIN 1000 1125 1225 1314 1415 1505 END
+	~Author's choice~ BEGIN 1000 1125 1215 1314 1415 1505 END
+	~Author's choice for Infinity UI++~ BEGIN 1000 1125 1215 1314 1415 1515 END
 	~No specific settings, just templates for manual edit~ BEGIN 1000 END
 END
 
@@ -31,6 +33,7 @@ COPY_EXISTING ~%MOD_FOLDER%/glsl/fptone.glsl~ ~override~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpseam.glsl~ ~override~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpsprite.glsl~ ~override~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpselect.glsl~ ~override~
+COPY_EXISTING ~%MOD_FOLDER%/glsl/fpyuv.glsl~ ~override~
 
 
 // Catmull-Rom
@@ -46,7 +49,7 @@ END
 BEGIN ~Use Catmull-Rom interpolation in all shaders~ DESIGNATED 1125
 SUBCOMPONENT ~Scaling filter~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
-ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
 		REPLACE_TEXTUALLY ~uhCatmullRom[ 	]*=[ 	]*[a-z]+;~ ~uhCatmullRom		= true;~
 	BUT_ONLY_IF_IT_CHANGES
@@ -88,6 +91,35 @@ END
 
 
 // Color fixes
+BEGIN ~Use moderate color adjustments (gamma +2%, contrast +10%, brightness +5%), sprites only~ DESIGNATED 1304
+SUBCOMPONENT ~Color adjustments~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  1.02;~
+		REPLACE_TEXTUALLY ~uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhContrast	=  1.1;~
+		REPLACE_TEXTUALLY ~uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhBright	= +0.05;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+BEGIN ~Use moderate color adjustments (gamma +2%, contrast +10%, brightness +5%), all shaders~ DESIGNATED 1314
+SUBCOMPONENT ~Color adjustments~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  1.02;~
+		REPLACE_TEXTUALLY ~uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhContrast	=  1.1;~
+		REPLACE_TEXTUALLY ~uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhBright	= +0.05;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+ACTION_FOR_EACH shader IN ~override/fpyuv.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  1.632;~
+		REPLACE_TEXTUALLY ~uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhContrast	=  1.1;~
+		REPLACE_TEXTUALLY ~uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhBright	= +0.05;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
 BEGIN ~Use recommended color adjustments (gamma +2%, contrast +20%, brightness +10%), sprites only~ DESIGNATED 1305
 SUBCOMPONENT ~Color adjustments~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
@@ -109,6 +141,13 @@ ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~overrid
 		REPLACE_TEXTUALLY ~uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhBright	= +0.1;~
 	BUT_ONLY_IF_IT_CHANGES
 END
+ACTION_FOR_EACH shader IN ~override/fpyuv.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  1.632;~
+		REPLACE_TEXTUALLY ~uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhContrast	=  1.2;~
+		REPLACE_TEXTUALLY ~uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhBright	= +0.1;~
+	BUT_ONLY_IF_IT_CHANGES
+END
 
 
 // Sharpening
@@ -124,7 +163,7 @@ END
 BEGIN ~Sharpen slightly (+0.25), all shaders~ DESIGNATED 1415
 SUBCOMPONENT ~Sharpening / blur~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
-ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
 		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  +0.25;~
 	BUT_ONLY_IF_IT_CHANGES
@@ -142,7 +181,7 @@ END
 BEGIN ~Sharpen more (+0.50), all shaders~ DESIGNATED 1435
 SUBCOMPONENT ~Sharpening / blur~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
-ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
 		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  +0.5;~
 	BUT_ONLY_IF_IT_CHANGES
@@ -160,7 +199,7 @@ END
 BEGIN ~Blur slightly (-0.25 sharpen), all shaders~ DESIGNATED 1455
 SUBCOMPONENT ~Sharpening / blur~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
-ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
 		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  -0.25;~
 	BUT_ONLY_IF_IT_CHANGES
@@ -178,7 +217,7 @@ END
 BEGIN ~Blur more (-0.50 sharpen), all shaders~ DESIGNATED 1475
 SUBCOMPONENT ~Sharpening / blur~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
-ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
 		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  -0.5;~
 	BUT_ONLY_IF_IT_CHANGES
@@ -223,7 +262,7 @@ END
 BEGIN ~Make colors warmer (hue +3.0 deg), all shaders~ DESIGNATED 1615
 SUBCOMPONENT ~Hue change~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
-ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
 		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  +3.0;~
 	BUT_ONLY_IF_IT_CHANGES
@@ -241,7 +280,7 @@ END
 BEGIN ~Make colors remarkably warmer (hue +5.0 deg), all shaders~ DESIGNATED 1635
 SUBCOMPONENT ~Hue change~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
-ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
 		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  +5.0;~
 	BUT_ONLY_IF_IT_CHANGES
@@ -259,7 +298,7 @@ END
 BEGIN ~Make colors colder (hue -3.0 deg), all shaders~ DESIGNATED 1655
 SUBCOMPONENT ~Hue change~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
-ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
 		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  -3.0;~
 	BUT_ONLY_IF_IT_CHANGES
@@ -277,7 +316,7 @@ END
 BEGIN ~Make colors remarkably colder (hue -5.0 deg), all shaders~ DESIGNATED 1675
 SUBCOMPONENT ~Hue change~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
-ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
 		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  -5.0;~
 	BUT_ONLY_IF_IT_CHANGES

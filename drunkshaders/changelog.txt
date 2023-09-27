@@ -1,3 +1,10 @@
+(0.2.4)
+Restored some alpha values.
+Added heuristic detection of right/bottom texture borders.
+Added new color modes.
+Fixed outlines of cloud forms of vampires/efreeti.
+Initial movies support (fpyuv.glsl).
+
 (0.2.3)
 Added changelog.
 Fixed alpha adjustment for fpdraw-like shaders.

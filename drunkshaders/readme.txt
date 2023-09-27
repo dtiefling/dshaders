@@ -120,6 +120,14 @@ anything.
 	 consistent with other objects in the game.
 	 - **Disable sprite outlines in all sprites** - as it was in BGEE 1.3.
  - *Color fixes*
+	 - **Use moderate color adjustments (gamma +2%, contrast +10%,
+	   brightness +5%), sprites only** - slighter changes than the recommended
+	   setting of *Shader Pack*, as it is performed in linear space and might
+	   require less changes due to Catmull-Rom options. It affects sprites
+	   only.
+	 - **Use moderate color adjustments (gamma +2%, contrast +10%,
+	   brightness +5%), all shaders** - slighter changes than the recommended
+	   setting of *Shader Pack*, for all the shaders.
 	 - **Use recommended color adjustments (gamma +2%, contrast +20%,
 	   brightness +10%), sprites only** - similar to the recommended
 	   setting of *Shader Pack*, but only for the sprites (no maps, UI
@@ -262,9 +270,6 @@ Otherwise, some settings I would recommend for most displays are:
 	 - [Catmull-Rom everywhere](https://github.com/dtiefling/dshaders/assets/145703648/56d09666-076d-4390-8300-48f1e158ccfc)
 	 - And since the old games made it possible to adjust image properties,
 	   consider [Color changes + Catmull-Rom](https://github.com/dtiefling/dshaders/assets/145703648/5d54a0b8-afd7-43db-b6da-caf2d189c89a)
-
-
-[](https://github.com/dtiefling/dshaders/assets/145703648/04eeb0ab-5834-4b7e-943a-4c8122cfaa0d)
 
 ### Resources
 
