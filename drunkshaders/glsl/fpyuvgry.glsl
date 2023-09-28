@@ -33,8 +33,8 @@ const lowp mat3  uhHueM		= mat3(
 
 const lowp vec3 rgbWeights  = vec3(0.299, 0.587, 0.114);
 
-#define HAS_U_COLOR_TONE 0
-#define HAS_UTEX2 0
+#define HAS_U_COLOR_TONE 1
+#define HAS_UTEX2 1
 
 uniform lowp	sampler2D	uTex;
 #if HAS_UTEX2

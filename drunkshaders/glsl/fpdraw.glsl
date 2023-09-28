@@ -300,7 +300,7 @@ void main()
 	bool borderR2 = (posUb.x >= iUTcScale.x - 1);
 	bool heuristicBorder = false;
 
-	if (all(equal(vColor, vec4(1.0))))
+	if (VCOLOR_MUL != 1 && all(equal(vColor, vec4(1.0))))
 	{
 		if (
 				uhRelDist(region[0 * 4 + 0], region[1 * 4 + 0]) +
@@ -412,16 +412,17 @@ void main()
 	}
 
 	lowp vec4 lSample = texture(uTex, vTc);
+	lowp vec4 hbSample;
 	lowp vec3 outColor;
 
 	if (heuristicBorder)
 	{
-		lowp vec4 texel = texelFetch(uTex, posUb + ivec2(posFr + 0.5), 0);
-		lSample.rgb = texel.rgb;
-		lSample.a = min(lSample.a, texel.a);
+		hbSample = texelFetch(uTex, posUb + ivec2(posFr + 0.5), 0);
+		hbSample.a = min(lSample.a, hbSample.a);
+		hbSample.rgb = uhToLinear(hbSample.rgb);
 	}
 
-	if (uhCatmullRom && !(VCOLOR_MUL == 2 && all(equal(region[2 * 4 + 2], vec3(0.0)))) && !(heuristicBorder && lSample.a < 0.0625))
+	if (uhCatmullRom && !(VCOLOR_MUL == 2 && all(equal(region[2 * 4 + 2], vec3(0.0)))))
 	{
 		outColor = uhCatmullRomInterp(region, posFr);
 	}
@@ -430,7 +431,7 @@ void main()
 		outColor = uhToLinear(lSample.rgb);
 	}
 
-	if (uhSharpen != 0.0 && !heuristicBorder)
+	if (uhSharpen != 0.0)
 	{
 		lowp vec3 average = uhGaussianBlur(region, posFr, 2.5);
 		outColor = outColor * (1.0 + uhSharpen) - average * uhSharpen;
@@ -441,6 +442,11 @@ void main()
 		outColor *= lSample.a * 16.0;
 	}
 
+	if (heuristicBorder && hbSample.a < 0.0625)
+	{
+		hbSample.rgb *= hbSample.a * 16.0;
+	}
+
 	#if VCOLOR_MUL == 1
 	lSample.a = vColor.a * outColor.r;
 	outColor = uhToLinear(vColor.rgb);
@@ -448,6 +454,13 @@ void main()
 	outColor *= uhToLinear(vColor.rgb);
 	lSample.a *= vColor.a;
 	#endif
+
+	if (heuristicBorder && uhRelDist(outColor, hbSample.rgb) > 0.75)
+	{
+		lSample.rgb = uhFromLinear(hbSample.rgb);
+		lSample.a = hbSample.a;
+		outColor = hbSample.rgb;
+	}
 
 	if (uhFontHackGamma > 0.0 && uhFontHackGamma != uhGamma)
 	{

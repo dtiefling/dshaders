@@ -1,3 +1,7 @@
+(0.2.5)
+Reduced number of false positives in heuristic border detection.
+Extended movies support (common tiling logic, introduced fpyuvgry.glsl).
+
 (0.2.4)
 Restored some alpha values.
 Added heuristic detection of right/bottom texture borders.
