@@ -2,7 +2,7 @@
 /* --------- FEEL FREE TO CHANGE THE NUMBERS AND true/false VALUES --------- */
 /* ---------- (the settings were introduced by drunkshaders mod) ----------- */
 
-const bool uhCatmullRom		= true;
+const bool uhCatmullRom		= false;
 
 const lowp float uhSharpen	=  0.0;	// 0.0 - default, positive - sharpen, negative - blur, play with +-0.2 steps to see difference
 const lowp float uhGamma	=  1.6;	// gamma correction (1.0 is default, play with +-20% steps to see difference)
