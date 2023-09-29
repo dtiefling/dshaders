@@ -42,6 +42,7 @@ const lowp vec3 rgbWeights  = vec3(0.299, 0.587, 0.114);
 #define HAS_VREF 1
 #define OUTLINE_COLOR vec3(0.0)
 #define VCOLOR_MUL 2
+#define NEEDS_HEURISTIC_BORDER 0
 
 uniform lowp	sampler2D	uTex;
 #if HAS_BLUR_AMOUNT
@@ -281,6 +282,21 @@ lowp float uhRelDist(in lowp vec3 x, in lowp vec3 y)
 	return uhRGBDist(x, y) / (max(uhRGBDist(x, vec3(0.0)), uhRGBDist(vec3(0.0), y)) + 0.00001);
 }
 
+lowp vec3 uhLinearInterp(in lowp vec3 region[16], in mediump vec2 posFr)
+{
+	return (
+		(region[1 * 4 + 1] * (1.0 - posFr.x) + region[1 * 4 + 2] * posFr.x) * (1.0 - posFr.y) +
+		(region[2 * 4 + 1] * (1.0 - posFr.x) + region[2 * 4 + 2] * posFr.x) * posFr.y);
+}
+
+lowp vec3 uhLinearInterpPow(in lowp vec3 region[16], in mediump vec2 posFr, in mediump float k)
+{
+	mediump vec3 k3 = vec3(k);
+	return pow((
+		(pow(region[1 * 4 + 1], k3) * (1.0 - posFr.x) + pow(region[1 * 4 + 2], k3) * posFr.x) * (1.0 - posFr.y) +
+		(pow(region[2 * 4 + 1], k3) * (1.0 - posFr.x) + pow(region[2 * 4 + 2], k3) * posFr.x) * posFr.y), 1.0 / k3);
+}
+
 
 void main()
 {
@@ -300,13 +316,20 @@ void main()
 	bool borderR2 = (posUb.x >= iUTcScale.x - 1);
 	bool heuristicBorder = false;
 
+	lowp vec4 lSample = texture(uTex, vTc);
+	lowp vec4 origSample = lSample;
+	lowp vec3 outColor;
+
+	#if NEEDS_HEURISTIC_BORDER
 	if (VCOLOR_MUL != 1 && all(equal(vColor, vec4(1.0))))
 	{
 		if (
 				uhRelDist(region[0 * 4 + 0], region[1 * 4 + 0]) +
 				uhRelDist(region[0 * 4 + 1], region[1 * 4 + 1]) +
+				uhRelDist(region[0 * 4 + 2], region[1 * 4 + 2]) >= 2.5 &&
+				uhRelDist(region[0 * 4 + 1], region[1 * 4 + 1]) +
 				uhRelDist(region[0 * 4 + 2], region[1 * 4 + 2]) +
-				uhRelDist(region[0 * 4 + 3], region[1 * 4 + 3]) >= 2.0)
+				uhRelDist(region[0 * 4 + 3], region[1 * 4 + 3]) >= 2.5)
 		{
 			heuristicBorder = true;
 			borderT = true;
@@ -314,8 +337,10 @@ void main()
 		if (
 				uhRelDist(region[1 * 4 + 0], region[2 * 4 + 0]) +
 				uhRelDist(region[1 * 4 + 1], region[2 * 4 + 1]) +
+				uhRelDist(region[1 * 4 + 2], region[2 * 4 + 2]) >= 2.75 &&
+				uhRelDist(region[1 * 4 + 1], region[2 * 4 + 1]) +
 				uhRelDist(region[1 * 4 + 2], region[2 * 4 + 2]) +
-				uhRelDist(region[1 * 4 + 3], region[2 * 4 + 3]) >= 2.0)
+				uhRelDist(region[1 * 4 + 3], region[2 * 4 + 3]) >= 2.75)
 		{
 			heuristicBorder = true;
 			borderB = true;
@@ -323,8 +348,10 @@ void main()
 		if (
 				uhRelDist(region[2 * 4 + 0], region[3 * 4 + 0]) +
 				uhRelDist(region[2 * 4 + 1], region[3 * 4 + 1]) +
+				uhRelDist(region[2 * 4 + 2], region[3 * 4 + 2]) >= 2.25 &&
+				uhRelDist(region[2 * 4 + 1], region[3 * 4 + 1]) +
 				uhRelDist(region[2 * 4 + 2], region[3 * 4 + 2]) +
-				uhRelDist(region[2 * 4 + 3], region[3 * 4 + 3]) >= 2.0)
+				uhRelDist(region[2 * 4 + 3], region[3 * 4 + 3]) >= 2.25)
 		{
 			heuristicBorder = true;
 			borderB2 = true;
@@ -332,8 +359,10 @@ void main()
 		if (
 				uhRelDist(region[0 * 4 + 0], region[0 * 4 + 1]) +
 				uhRelDist(region[1 * 4 + 0], region[1 * 4 + 1]) +
+				uhRelDist(region[2 * 4 + 0], region[2 * 4 + 1]) >= 2.75 &&
+				uhRelDist(region[1 * 4 + 0], region[1 * 4 + 1]) +
 				uhRelDist(region[2 * 4 + 0], region[2 * 4 + 1]) +
-				uhRelDist(region[3 * 4 + 0], region[3 * 4 + 1]) > 2.0)
+				uhRelDist(region[3 * 4 + 0], region[3 * 4 + 1]) >= 2.75)
 		{
 			heuristicBorder = true;
 			borderL = true;
@@ -341,8 +370,10 @@ void main()
 		if (
 				uhRelDist(region[0 * 4 + 1], region[0 * 4 + 2]) +
 				uhRelDist(region[1 * 4 + 1], region[1 * 4 + 2]) +
+				uhRelDist(region[2 * 4 + 1], region[2 * 4 + 2]) >= 2.75 &&
+				uhRelDist(region[1 * 4 + 1], region[1 * 4 + 2]) +
 				uhRelDist(region[2 * 4 + 1], region[2 * 4 + 2]) +
-				uhRelDist(region[3 * 4 + 1], region[3 * 4 + 2]) >= 2.0)
+				uhRelDist(region[3 * 4 + 1], region[3 * 4 + 2]) >= 2.75)
 		{
 			heuristicBorder = true;
 			borderR = true;
@@ -350,13 +381,16 @@ void main()
 		if (
 				uhRelDist(region[0 * 4 + 2], region[0 * 4 + 3]) +
 				uhRelDist(region[1 * 4 + 2], region[1 * 4 + 3]) +
+				uhRelDist(region[2 * 4 + 2], region[2 * 4 + 3]) >= 2.25 &&
+				uhRelDist(region[1 * 4 + 2], region[1 * 4 + 3]) +
 				uhRelDist(region[2 * 4 + 2], region[2 * 4 + 3]) +
-				uhRelDist(region[3 * 4 + 2], region[3 * 4 + 3]) >= 2.0)
+				uhRelDist(region[3 * 4 + 2], region[3 * 4 + 3]) >= 2.25)
 		{
 			heuristicBorder = true;
 			borderR2 = true;
 		}
 	}
+	#endif
 
 	#if HAS_VREF
 	ivec2 texCoordTileLoc = (posUb - ivec2(vRef * iUTcScale - 0.5)) & 63;
@@ -411,18 +445,7 @@ void main()
 		region[3 * 4 + 3] = region[2 * 4 + 2];
 	}
 
-	lowp vec4 lSample = texture(uTex, vTc);
-	lowp vec4 hbSample;
-	lowp vec3 outColor;
-
-	if (heuristicBorder)
-	{
-		hbSample = texelFetch(uTex, posUb + ivec2(posFr + 0.5), 0);
-		hbSample.a = min(lSample.a, hbSample.a);
-		hbSample.rgb = uhToLinear(hbSample.rgb);
-	}
-
-	if (uhCatmullRom && !(VCOLOR_MUL == 2 && all(equal(region[2 * 4 + 2], vec3(0.0)))))
+	if (uhCatmullRom)
 	{
 		outColor = uhCatmullRomInterp(region, posFr);
 	}
@@ -437,15 +460,25 @@ void main()
 		outColor = outColor * (1.0 + uhSharpen) - average * uhSharpen;
 	}
 
-	if (lSample.a < 0.0625 && VCOLOR_MUL != 1)
+	#if NEEDS_HEURISTIC_BORDER
+	if (heuristicBorder)
 	{
-		outColor *= lSample.a * 16.0;
+		lowp vec3 refColor = uhLinearInterpPow(region, posFr, 0.125);
+		lowp float refColorDist = uhRGBDist(outColor, refColor);
+		if (refColorDist > 0.0625)
+		{
+			lSample.rgb = uhFromLinear(refColor);
+			outColor = refColor;
+		}
+		else if (refColorDist > 0.046875)
+		{
+			lowp float refWeight = (refColorDist - 0.046875) * 64.0;
+			lSample.rgb = uhFromLinear(uhToLinear(lSample.rgb) * (1.0 - refWeight) + refColor * refWeight);
+			outColor = outColor * (1.0 - refWeight) + refColor * refWeight;
+		}
+		lSample.a = min(texelFetch(uTex, posUb, 0).a, texelFetch(uTex, posUb + ivec2(1), 0).a);
 	}
-
-	if (heuristicBorder && hbSample.a < 0.0625)
-	{
-		hbSample.rgb *= hbSample.a * 16.0;
-	}
+	#endif
 
 	#if VCOLOR_MUL == 1
 	lSample.a = vColor.a * outColor.r;
@@ -454,13 +487,6 @@ void main()
 	outColor *= uhToLinear(vColor.rgb);
 	lSample.a *= vColor.a;
 	#endif
-
-	if (heuristicBorder && uhRelDist(outColor, hbSample.rgb) > 0.75)
-	{
-		lSample.rgb = uhFromLinear(hbSample.rgb);
-		lSample.a = hbSample.a;
-		outColor = hbSample.rgb;
-	}
 
 	if (uhFontHackGamma > 0.0 && uhFontHackGamma != uhGamma)
 	{

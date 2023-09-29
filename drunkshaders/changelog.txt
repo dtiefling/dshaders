@@ -1,3 +1,10 @@
+(0.2.6)
+Remove heuristic border detection via preprocessor for shaders other than
+fpdraw.
+Modify the heuristic border detection in order to account for: spell animations
+with alpha, blended light objects and static object tiles. Also not to break
+effect icons. It is not perfect, but my best idea so far.
+
 (0.2.5)
 Reduced number of false positives in heuristic border detection.
 Extended movies support (common tiling logic, introduced fpyuvgry.glsl).
