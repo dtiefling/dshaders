@@ -1,3 +1,6 @@
+(0.2.6.1)
+Bugfix!
+
 (0.2.6)
 Remove heuristic border detection via preprocessor for shaders other than
 fpdraw.

@@ -326,10 +326,10 @@ void main()
 		if (
 				uhRelDist(region[0 * 4 + 0], region[1 * 4 + 0]) +
 				uhRelDist(region[0 * 4 + 1], region[1 * 4 + 1]) +
-				uhRelDist(region[0 * 4 + 2], region[1 * 4 + 2]) >= 2.5 &&
+				uhRelDist(region[0 * 4 + 2], region[1 * 4 + 2]) >= 2.25 &&
 				uhRelDist(region[0 * 4 + 1], region[1 * 4 + 1]) +
 				uhRelDist(region[0 * 4 + 2], region[1 * 4 + 2]) +
-				uhRelDist(region[0 * 4 + 3], region[1 * 4 + 3]) >= 2.5)
+				uhRelDist(region[0 * 4 + 3], region[1 * 4 + 3]) >= 2.25)
 		{
 			heuristicBorder = true;
 			borderT = true;
@@ -445,7 +445,7 @@ void main()
 		region[3 * 4 + 3] = region[2 * 4 + 2];
 	}
 
-	if (uhCatmullRom)
+	if (uhCatmullRom && !(VCOLOR_MUL == 2 && all(equal(region[2 * 4 + 2], vec3(0.0)))))
 	{
 		outColor = uhCatmullRomInterp(region, posFr);
 	}
@@ -476,7 +476,7 @@ void main()
 			lSample.rgb = uhFromLinear(uhToLinear(lSample.rgb) * (1.0 - refWeight) + refColor * refWeight);
 			outColor = outColor * (1.0 - refWeight) + refColor * refWeight;
 		}
-		lSample.a = min(texelFetch(uTex, posUb, 0).a, texelFetch(uTex, posUb + ivec2(1), 0).a);
+		lSample.a = min(texelFetch(uTex, posUb + ivec2(borderR, borderB), 0).a, lSample.a);
 	}
 	#endif
 
