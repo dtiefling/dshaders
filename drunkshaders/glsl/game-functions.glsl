@@ -13,6 +13,10 @@ varying highp	vec2		vRef;
 varying lowp	vec4		vColor;
 
 
+const lowp vec3 uhRGBWeights	= vec3(0.299, 0.587, 0.114);
+const lowp vec3 uhGFTextColor	= vec3(1.00, 0.95, 0.55);
+
+
 #define UH_REG_RADIUS			3
 #define UH_REG_WIDTH			(UH_REG_RADIUS * 2)
 #define UH_REG_HEIGHT			UH_REG_WIDTH
@@ -45,11 +49,12 @@ ivec2				uhPosMin;
 ivec2				uhPosMax;
 
 
+
 lowp vec3 uhToLinear(in lowp vec3 srgb)
 {
 	lowp vec3 cutoff = vec3(lessThanEqual(srgb, vec3(0.039285714)));
-	lowp vec3 higher = pow(srgb * vec3(0.947867299) + vec3(0.052132701), vec3(2.4));
-	lowp vec3 lower = srgb * vec3(0.077380154);
+	lowp vec3 higher = pow(srgb * 0.947867299 + 0.052132701, vec3(2.4));
+	lowp vec3 lower = srgb * 0.077380154;
 	return mix(higher, lower, cutoff);
 }
 
@@ -57,8 +62,8 @@ lowp vec3 uhToLinear(in lowp vec3 srgb)
 lowp vec3 uhFromLinear(in lowp vec3 rgb)
 {
 	lowp vec3 cutoff = vec3(lessThanEqual(rgb, vec3(0.0030399346)));
-	lowp vec3 higher = pow(rgb, vec3(0.4166666667)) * vec3(1.055) - vec3(0.055);
-	lowp vec3 lower = rgb * vec3(12.9232101808);
+	lowp vec3 higher = pow(rgb, vec3(0.4166666667)) * 1.055 - 0.055;
+	lowp vec3 lower = rgb * 12.9232101808;
 	return mix(higher, lower, cutoff);
 }
 
@@ -79,9 +84,7 @@ lowp vec4 uhFetchTexel(in ivec2 pos)
 {
 	ivec2 tPos = uhPosUb + pos;
 	tPos = max(uhPosMin, min(tPos, uhPosMax));
-	lowp vec4 texel = texelFetch(uTex, tPos, 0);
-	texel.rgb = uhToLinear(texel.rgb);
-	return texel;
+	return uhColorToLinear(texelFetch(uTex, tPos, 0));
 }
 
 
@@ -118,25 +121,23 @@ lowp vec4 uhFetchNN()
 }
 
 
-/*
 lowp vec4 uhFetchLinear()
 {
 	return (
-		uhFetchPixel(ivec2(0, 0)) * vec4((1.0 - uhPosFr.y) * (1.0 - uhPosFr.x)) +
-		uhFetchPixel(ivec2(1, 0)) * vec4((1.0 - uhPosFr.y) * uhPosFr.x) +
-		uhFetchPixel(ivec2(0, 1)) * vec4(uhPosFr.y         * (1.0 - uhPosFr.x)) +
-		uhFetchPixel(ivec2(1, 1)) * vec4(uhPosFr.y         * uhPosFr.x));
+		uhFetchPixel(ivec2(0, 0)) * (1.0 - uhPosFr.y) * (1.0 - uhPosFr.x) +
+		uhFetchPixel(ivec2(1, 0)) * (1.0 - uhPosFr.y) * uhPosFr.x +
+		uhFetchPixel(ivec2(0, 1)) * uhPosFr.y         * (1.0 - uhPosFr.x) +
+		uhFetchPixel(ivec2(1, 1)) * uhPosFr.y         * uhPosFr.x);
 }
-*/
 
 
 lowp vec4 uhFetchCatmullRom()
 {
 	lowp mat4x2 axes = mat4x2(
-		uhPosFr * (uhPosFr * (uhPosFr * vec2(-0.5) + vec2(1.0)) - vec2(0.5)),
-		uhPosFr *  uhPosFr * (uhPosFr * vec2( 1.5) - vec2(2.5)) + vec2(1.0),
-		uhPosFr * (uhPosFr * (uhPosFr * vec2(-1.5) + vec2(2.0)) + vec2(0.5)),
-		uhPosFr *  uhPosFr * (uhPosFr * vec2( 0.5) - vec2(0.5))
+		uhPosFr * (uhPosFr * (uhPosFr * -0.5 + 1.0) - 0.5),
+		uhPosFr *  uhPosFr * (uhPosFr *  1.5 - 2.5) + 1.0,
+		uhPosFr * (uhPosFr * (uhPosFr * -1.5 + 2.0) + 0.5),
+		uhPosFr *  uhPosFr * (uhPosFr *  0.5 - 0.5)
 	);
 	lowp vec4 sum = vec4(0.0);
 
@@ -144,7 +145,7 @@ lowp vec4 uhFetchCatmullRom()
 	{
 		for (int x = -1; x <= 2; ++x)
 		{
-			sum += uhFetchPixel(ivec2(x, y)) * vec4(axes[x + 1][0] * axes[y + 1][1]);
+			sum += uhFetchPixel(ivec2(x, y)) * axes[x + 1][0] * axes[y + 1][1];
 		}
 	}
 
@@ -195,7 +196,7 @@ lowp vec4 uhFetchBlurry(in mediump float scale)
 	{
 		for (int x = -1; x <= 2; ++x)
 		{
-			sum += uhFetchPixel(ivec2(x, y)) * vec4(axes[x + 1][0] * axes[y + 1][1]);
+			sum += uhFetchPixel(ivec2(x, y)) * axes[x + 1][0] * axes[y + 1][1];
 		}
 	}
 
@@ -206,10 +207,10 @@ lowp vec4 uhFetchBlurry(in mediump float scale)
 lowp vec4 uhFetchRefTextColor()
 {
 	return uhColorToLinear(
-		uhColorFromLinear(uhFetchPixel(ivec2(0, 0))) * vec4((1.0 - uhPosFr.y) * (1.0 - uhPosFr.x)) +
-		uhColorFromLinear(uhFetchPixel(ivec2(1, 0))) * vec4((1.0 - uhPosFr.y) * uhPosFr.x) +
-		uhColorFromLinear(uhFetchPixel(ivec2(0, 1))) * vec4(uhPosFr.y         * (1.0 - uhPosFr.x)) +
-		uhColorFromLinear(uhFetchPixel(ivec2(1, 1))) * vec4(uhPosFr.y         * uhPosFr.x));
+		uhColorFromLinear(uhFetchPixel(ivec2(0, 0))) * (1.0 - uhPosFr.y) * (1.0 - uhPosFr.x) +
+		uhColorFromLinear(uhFetchPixel(ivec2(1, 0))) * (1.0 - uhPosFr.y) * uhPosFr.x +
+		uhColorFromLinear(uhFetchPixel(ivec2(0, 1))) * uhPosFr.y         * (1.0 - uhPosFr.x) +
+		uhColorFromLinear(uhFetchPixel(ivec2(1, 1))) * uhPosFr.y         * uhPosFr.x);
 }
 
 
@@ -226,15 +227,15 @@ lowp vec3 uhYIQRotate(in lowp vec3 color)
 lowp vec4 uhMakeFragColor(in lowp vec4 pixel, in lowp float gamma)
 {
 	lowp vec3 color = uhYIQRotate(pixel.rgb);
-	lowp float grey = dot(color, vec3(0.299, 0.587, 0.114));
+	lowp float grey = dot(color, uhRGBWeights);
 
-	color = color * vec3(uhSat) + grey * vec3(1.0 - uhSat);
+	color = color * uhSat + grey * (1.0 - uhSat);
 	#if HAS_U_COLOR_TONE
 	lowp vec3 tone = grey * uhToLinear(uColorTone.rgb);
 	color = mix(color, tone, uColorTone.a);
 	#endif
 	
-	color = (color - vec3(0.5)) * vec3(uhContrast) + vec3(0.5 + uhBright);
+	color = (color - 0.5) * uhContrast + 0.5 + uhBright;
 	color = pow(color, vec3(gamma));
 
 	return vec4(uhFromLinear(color), pixel.a);
@@ -312,19 +313,40 @@ mediump vec2 uhOutlineData(in int radius)
 }
 
 
+bool uhProbableCircle()
+{
+	int idx = 0;
+	if (max(max(vColor.r, vColor.g), vColor.b) < 0.015625)
+	{
+		return false;
+	}
+	for (int y = -1; y <= 2; ++y)
+	{
+		for (int x = -1; x <= 2; ++x)
+		{
+			if (!all(equal(uhRegion[y * UH_REG_WIDTH + x + UH_REG_INDEX_OFFSET], vec4(1.0))))
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+
 void main()
 {
-	uhIUTcScale = vec2(1.0) / uTcScale;
+	uhIUTcScale = 1.0 / uTcScale;
 	uhUVTc = vTc * uhIUTcScale + UVTC_SHIFT;
 	uhPosUb = ivec2(uhUVTc);
 	uhPosFr = uhUVTc - vec2(uhPosUb);
 	uhPosMin = ivec2(0);
-	uhPosMax = ivec2(uhIUTcScale) - ivec2(1);
+	uhPosMax = ivec2(uhIUTcScale) - 1;
 
 	#if HAS_VREF
 	ivec2 tileStart = ivec2(vRef * uhIUTcScale);
 	uhPosMin = max(uhPosMin, tileStart);
-	uhPosMax = min(uhPosMax, tileStart + ivec2(63));
+	uhPosMax = min(uhPosMax, tileStart + 63);
 	#endif
 
 	uhFetchRegion();
@@ -337,7 +359,7 @@ void main()
 	if (uhSharpen != 0.0)
 	{
 		lowp vec4 average = uhFetchBlurry(2.5);
-		outColor.rgb = outColor.rgb * vec3(1.0 + uhSharpen) - average.rgb * vec3(uhSharpen);
+		outColor.rgb = outColor.rgb * (1.0 + uhSharpen) - average.rgb * uhSharpen;
 	}
 
 	// Prevent visible edges of blended object tiles
@@ -390,7 +412,15 @@ void main()
 	outColor = vec4(uhToLinear(vColor.rgb), vColor.a * outColor.r);
 	#elif VCOLOR_MUL == 2
 	// Day / night
-	outColor *= uhColorToLinear(vColor);
+	if (uhSelectionGamma == 1.0 || !uhProbableCircle())
+	{
+		outColor *= uhColorToLinear(vColor);
+	}
+	else
+	{
+		outColor.rgb *= uhToLinear(vColor.rgb);
+		outColor.a *= pow(vColor.a, uhSelectionGamma);
+	}
 	#endif
 
 	lowp float gamma = uhGamma;
@@ -398,8 +428,7 @@ void main()
 	// Font gamma hack for Infinity UI++
 	if (uhFontHackGamma > 0.0 && uhFontHackGamma != uhGamma)
 	{
-		lowp vec3 drawTextColor = vec3(1.00, 0.95, 0.55);
-		lowp float cosSim = uhCosineSimilarity(texColor.rgb, drawTextColor);
+		lowp float cosSim = uhCosineSimilarity(texColor.rgb, uhGFTextColor);
 		lowp float fontHackMatch = 1.0;
 		fontHackMatch *= uhBoundMul(texColor.r, 0.07, 1.0, 0.1);
 		fontHackMatch *= uhBoundMul(cosSim, 0.997, 1.0, 0.002);

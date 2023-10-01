@@ -1,3 +1,8 @@
+(0.3.1)
+Code changes in attempt to work it for the tester (@Parys at beamdog forums).
+Added feature that makes the sprite circles thinner (and causes all the
+inevitable side effects).
+
 (0.3.0)
 Complete refactor!
 Common content separated in files used to build all shaders.

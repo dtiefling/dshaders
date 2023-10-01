@@ -1,7 +1,7 @@
 BACKUP ~drunkshaders/backup~
 
 AUTHOR ~drunktiefling~
-VERSION ~0.3.0~
+VERSION ~0.3.1~
 README ~drunkshaders/readme.txt~
 
 
@@ -336,5 +336,16 @@ REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ ~override/fpyuvgry.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
 		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  -5.0;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+
+
+// Selection gamma
+BEGIN ~Make sprite selection circles thinner and object selection highlight more transparent~ DESIGNATED 1705
+SUBCOMPONENT ~Selection gamma~
+REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
+ACTION_FOR_EACH shader IN ~override/fpdraw.glsl~ ~override/fptone.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~uhSelectionGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSelectionGamma	=  2.0;~
 	BUT_ONLY_IF_IT_CHANGES
 END

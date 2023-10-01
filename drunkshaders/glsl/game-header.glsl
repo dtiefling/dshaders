@@ -15,6 +15,8 @@ const mediump float uhOutlineSize	= 0.0;	// up to 3.5; 0.0 to disable; default f
 
 const lowp float uhFontHackGamma	= 0.0;	// dirty hack for UI mods that affect stack count rendering (Dragonspear UI++, Infinity UI); fpdraw-only; 0.0 means disabled; usually DON'T SET
 
+const lowp float uhSelectionGamma	= 1.0;	// fpdraw-specific; increase to get thinner selection circles and more delicate highlight of selected objects
+
 /* - CHANGING THE CODE BELOW MIGHT REQUIRE GLSL KNOWLEDGE / BREAK THE GAME - */
 /* ------------------------------------------------------------------------- */
 
