@@ -1,12 +1,26 @@
+(0.3.0)
+Complete refactor!
+Common content separated in files used to build all shaders.
+Reduced attempts to fix issues that happen with the original game shaders
+anyways.
+Reverse engineered parameters of texture samplers, slightly different dependent
+on shader.
+Much less details lost in rendering.
+Much less false positives.
+Separate code detects different kinds of errors (object tiles,
+blended object tiles, animations with transparency). It's an attempt to remove
+all lines for object tiles and animations with transparency, and highly
+reduce their number for blended object tiles.
+
 (0.2.6.1)
 Bugfix!
 
 (0.2.6)
 Remove heuristic border detection via preprocessor for shaders other than
 fpdraw.
-Modify the heuristic border detection in order to account for: spell animations
-with alpha, blended light objects and static object tiles. Also not to break
-effect icons. It is not perfect, but my best idea so far.
+Modify the heuristic border detection in order to account for: spell
+animations with alpha, blended light objects and static object tiles.
+Also not to break effect icons. It is not perfect, but my best idea so far.
 
 (0.2.5)
 Reduced number of false positives in heuristic border detection.

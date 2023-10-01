@@ -1,7 +1,7 @@
 BACKUP ~drunkshaders/backup~
 
 AUTHOR ~drunktiefling~
-VERSION ~0.2.6.1~
+VERSION ~0.3.0~
 README ~drunkshaders/readme.txt~
 
 
@@ -28,13 +28,29 @@ BEGIN ~Adjustable shaders coded by a drunk tiefling [Main component]~ DESIGNATED
 REQUIRE_PREDICATE GAME_IS ~bgee bg2ee eet iwdee pstee~ ~This mod requires an Enhanced Edition game to be installed.~
 
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpfont.glsl~ ~override~
+	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/game-header.glsl~
+	APPEND_FILE   ~%MOD_FOLDER%/glsl/game-functions.glsl~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpdraw.glsl~ ~override~
+	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/game-header.glsl~
+	APPEND_FILE   ~%MOD_FOLDER%/glsl/game-functions.glsl~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fptone.glsl~ ~override~
+	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/game-header.glsl~
+	APPEND_FILE   ~%MOD_FOLDER%/glsl/game-functions.glsl~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpseam.glsl~ ~override~
+	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/game-header.glsl~
+	APPEND_FILE   ~%MOD_FOLDER%/glsl/game-functions.glsl~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpsprite.glsl~ ~override~
+	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/game-header.glsl~
+	APPEND_FILE   ~%MOD_FOLDER%/glsl/game-functions.glsl~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpselect.glsl~ ~override~
+	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/game-header.glsl~
+	APPEND_FILE   ~%MOD_FOLDER%/glsl/game-functions.glsl~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpyuv.glsl~ ~override~
+	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/movie-header.glsl~
+	APPEND_FILE   ~%MOD_FOLDER%/glsl/movie-functions.glsl~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpyuvgry.glsl~ ~override~
+	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/movie-header.glsl~
+	APPEND_FILE   ~%MOD_FOLDER%/glsl/movie-functions.glsl~
 
 
 // Catmull-Rom
