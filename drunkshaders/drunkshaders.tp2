@@ -28,29 +28,29 @@ BEGIN ~Adjustable shaders coded by a drunk tiefling [Main component]~ DESIGNATED
 REQUIRE_PREDICATE GAME_IS ~bgee bg2ee eet iwdee pstee~ ~This mod requires an Enhanced Edition game to be installed.~
 
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpfont.glsl~ ~override~
-	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/game-header.glsl~
-	APPEND_FILE   ~%MOD_FOLDER%/glsl/game-functions.glsl~
+	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/header-default.glsl~
+	APPEND_FILE   ~%MOD_FOLDER%/glsl/functions-game.glsl~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpdraw.glsl~ ~override~
-	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/game-header.glsl~
-	APPEND_FILE   ~%MOD_FOLDER%/glsl/game-functions.glsl~
+	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/header-draw.glsl~
+	APPEND_FILE   ~%MOD_FOLDER%/glsl/functions-game.glsl~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fptone.glsl~ ~override~
-	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/game-header.glsl~
-	APPEND_FILE   ~%MOD_FOLDER%/glsl/game-functions.glsl~
+	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/header-draw.glsl~
+	APPEND_FILE   ~%MOD_FOLDER%/glsl/functions-game.glsl~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpseam.glsl~ ~override~
-	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/game-header.glsl~
-	APPEND_FILE   ~%MOD_FOLDER%/glsl/game-functions.glsl~
+	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/header-default.glsl~
+	APPEND_FILE   ~%MOD_FOLDER%/glsl/functions-game.glsl~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpsprite.glsl~ ~override~
-	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/game-header.glsl~
-	APPEND_FILE   ~%MOD_FOLDER%/glsl/game-functions.glsl~
+	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/header-sprite.glsl~
+	APPEND_FILE   ~%MOD_FOLDER%/glsl/functions-game.glsl~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpselect.glsl~ ~override~
-	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/game-header.glsl~
-	APPEND_FILE   ~%MOD_FOLDER%/glsl/game-functions.glsl~
+	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/header-sprite.glsl~
+	APPEND_FILE   ~%MOD_FOLDER%/glsl/functions-game.glsl~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpyuv.glsl~ ~override~
-	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/movie-header.glsl~
-	APPEND_FILE   ~%MOD_FOLDER%/glsl/movie-functions.glsl~
+	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/header-default.glsl~
+	APPEND_FILE   ~%MOD_FOLDER%/glsl/functions-movies.glsl~
 COPY_EXISTING ~%MOD_FOLDER%/glsl/fpyuvgry.glsl~ ~override~
-	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/movie-header.glsl~
-	APPEND_FILE   ~%MOD_FOLDER%/glsl/movie-functions.glsl~
+	INSERT_FILE 0 ~%MOD_FOLDER%/glsl/header-default.glsl~
+	APPEND_FILE   ~%MOD_FOLDER%/glsl/functions-movies.glsl~
 
 
 // Catmull-Rom
@@ -59,7 +59,7 @@ SUBCOMPONENT ~Scaling filter~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhCatmullRom[ 	]*=[ 	]*[a-z]+;~ ~uhCatmullRom		= true;~
+		REPLACE_TEXTUALLY ~[ 	]uhCatmullRom[ 	]*=[ 	]*[a-z]+;~						~	uhCatmullRom		=  true;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -68,7 +68,7 @@ SUBCOMPONENT ~Scaling filter~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ ~override/fpyuvgry.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhCatmullRom[ 	]*=[ 	]*[a-z]+;~ ~uhCatmullRom		= true;~
+		REPLACE_TEXTUALLY ~[ 	]uhCatmullRom[ 	]*=[ 	]*[a-z]+;~						~	uhCatmullRom		=  true;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -79,7 +79,7 @@ SUBCOMPONENT ~Outline changes via shaders~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhOutlineSize[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhOutlineSize	= 0.0;~
+		REPLACE_TEXTUALLY ~[ 	]uhOutlineSize[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~		~	uhOutlineSize	    =  0.0;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -88,12 +88,12 @@ SUBCOMPONENT ~Outline changes via shaders~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhOutlineSize[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhOutlineSize	= 0.0;~
+		REPLACE_TEXTUALLY ~[ 	]uhOutlineSize[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~		~	uhOutlineSize	    =  0.0;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 ACTION_FOR_EACH shader IN ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhOutlineSize[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhOutlineSize	= 1.5;~
+		REPLACE_TEXTUALLY ~[ 	]uhOutlineSize[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~		~	uhOutlineSize	    =  1.5;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -102,7 +102,7 @@ SUBCOMPONENT ~Outline changes via shaders~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhOutlineSize[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhOutlineSize	= 0.0;~
+		REPLACE_TEXTUALLY ~[ 	]uhOutlineSize[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~		~	uhOutlineSize	    =  0.0;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -113,9 +113,9 @@ SUBCOMPONENT ~Color adjustments~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  1.02;~
-		REPLACE_TEXTUALLY ~uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhContrast	=  1.1;~
-		REPLACE_TEXTUALLY ~uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhBright	= +0.05;~
+		REPLACE_TEXTUALLY ~[ 	]uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhGamma				=  1.02;~
+		REPLACE_TEXTUALLY ~[ 	]uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~		~	uhContrast			=  1.1;~
+		REPLACE_TEXTUALLY ~[ 	]uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhBright			= +0.05;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -124,16 +124,16 @@ SUBCOMPONENT ~Color adjustments~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  1.02;~
-		REPLACE_TEXTUALLY ~uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhContrast	=  1.1;~
-		REPLACE_TEXTUALLY ~uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhBright	= +0.05;~
+		REPLACE_TEXTUALLY ~[ 	]uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhGamma				=  1.02;~
+		REPLACE_TEXTUALLY ~[ 	]uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~		~	uhContrast			=  1.1;~
+		REPLACE_TEXTUALLY ~[ 	]uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhBright			= +0.05;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 ACTION_FOR_EACH shader IN ~override/fpyuv.glsl~ ~override/fpyuvgry.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  1.632;~
-		REPLACE_TEXTUALLY ~uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhContrast	=  1.1;~
-		REPLACE_TEXTUALLY ~uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhBright	= +0.05;~
+		REPLACE_TEXTUALLY ~[ 	]uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhGamma				=  1.632;~
+		REPLACE_TEXTUALLY ~[ 	]uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~		~	uhContrast			=  1.1;~
+		REPLACE_TEXTUALLY ~[ 	]uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhBright			= +0.05;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -142,9 +142,9 @@ SUBCOMPONENT ~Color adjustments~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  1.02;~
-		REPLACE_TEXTUALLY ~uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhContrast	=  1.2;~
-		REPLACE_TEXTUALLY ~uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhBright	= +0.1;~
+		REPLACE_TEXTUALLY ~[ 	]uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhGamma				=  1.02;~
+		REPLACE_TEXTUALLY ~[ 	]uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~		~	uhContrast			=  1.2;~
+		REPLACE_TEXTUALLY ~[ 	]uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhBright			= +0.1;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -153,16 +153,16 @@ SUBCOMPONENT ~Color adjustments~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  1.02;~
-		REPLACE_TEXTUALLY ~uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhContrast	=  1.2;~
-		REPLACE_TEXTUALLY ~uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhBright	= +0.1;~
+		REPLACE_TEXTUALLY ~[ 	]uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhGamma				=  1.02;~
+		REPLACE_TEXTUALLY ~[ 	]uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~		~	uhContrast			=  1.2;~
+		REPLACE_TEXTUALLY ~[ 	]uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhBright			= +0.1;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 ACTION_FOR_EACH shader IN ~override/fpyuv.glsl~ ~override/fpyuvgry.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  1.632;~
-		REPLACE_TEXTUALLY ~uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhContrast	=  1.2;~
-		REPLACE_TEXTUALLY ~uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhBright	= +0.1;~
+		REPLACE_TEXTUALLY ~[ 	]uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhGamma				=  1.632;~
+		REPLACE_TEXTUALLY ~[ 	]uhContrast[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~		~	uhContrast			=  1.2;~
+		REPLACE_TEXTUALLY ~[ 	]uhBright[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhBright			= +0.1;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -173,7 +173,7 @@ SUBCOMPONENT ~Sharpening / blur~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  +0.25;~
+		REPLACE_TEXTUALLY ~[ 	]uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhSharpen			= +0.25;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -182,7 +182,7 @@ SUBCOMPONENT ~Sharpening / blur~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ ~override/fpyuvgry.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  +0.25;~
+		REPLACE_TEXTUALLY ~[ 	]uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhSharpen			= +0.25;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -191,7 +191,7 @@ SUBCOMPONENT ~Sharpening / blur~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  +0.5;~
+		REPLACE_TEXTUALLY ~[ 	]uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhSharpen			= +0.5;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -200,7 +200,7 @@ SUBCOMPONENT ~Sharpening / blur~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ ~override/fpyuvgry.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  +0.5;~
+		REPLACE_TEXTUALLY ~[ 	]uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhSharpen			= +0.5;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -209,7 +209,7 @@ SUBCOMPONENT ~Sharpening / blur~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  -0.25;~
+		REPLACE_TEXTUALLY ~[ 	]uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhSharpen			= -0.25;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -218,7 +218,7 @@ SUBCOMPONENT ~Sharpening / blur~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ ~override/fpyuvgry.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  -0.25;~
+		REPLACE_TEXTUALLY ~[ 	]uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhSharpen			= -0.25;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -227,7 +227,7 @@ SUBCOMPONENT ~Sharpening / blur~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  -0.5;~
+		REPLACE_TEXTUALLY ~[ 	]uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhSharpen			= -0.5;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -236,7 +236,7 @@ SUBCOMPONENT ~Sharpening / blur~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ ~override/fpyuvgry.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSharpen	=  -0.5;~
+		REPLACE_TEXTUALLY ~[ 	]uhSharpen[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhSharpen			= -0.5;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -247,7 +247,7 @@ SUBCOMPONENT ~Font fixes~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  0.8;~
+		REPLACE_TEXTUALLY ~[ 	]uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhGamma				=  0.8;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -256,12 +256,12 @@ SUBCOMPONENT ~Font fixes~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhGamma	=  0.8;~
+		REPLACE_TEXTUALLY ~[ 	]uhGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhGamma				=  0.8;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 ACTION_FOR_EACH shader IN ~override/fpdraw.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhFontHackGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhFontHackGamma	= 0.8;~
+		REPLACE_TEXTUALLY ~[ 	]uhFontHackGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~	~	uhFontHackGamma		=  0.8;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -272,7 +272,7 @@ SUBCOMPONENT ~Hue change~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  +3.0;~
+		REPLACE_TEXTUALLY ~[ 	]uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhHueDeg			= +3.0;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -281,7 +281,7 @@ SUBCOMPONENT ~Hue change~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ ~override/fpyuvgry.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  +3.0;~
+		REPLACE_TEXTUALLY ~[ 	]uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhHueDeg			= +3.0;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -290,7 +290,7 @@ SUBCOMPONENT ~Hue change~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  +5.0;~
+		REPLACE_TEXTUALLY ~[ 	]uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhHueDeg			= +5.0;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -299,7 +299,7 @@ SUBCOMPONENT ~Hue change~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ ~override/fpyuvgry.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  +5.0;~
+		REPLACE_TEXTUALLY ~[ 	]uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhHueDeg			= +5.0;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -308,7 +308,7 @@ SUBCOMPONENT ~Hue change~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  -3.0;~
+		REPLACE_TEXTUALLY ~[ 	]uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhHueDeg			= -3.0;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -317,7 +317,7 @@ SUBCOMPONENT ~Hue change~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ ~override/fpyuvgry.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  -3.0;~
+		REPLACE_TEXTUALLY ~[ 	]uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhHueDeg			= -3.0;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -326,7 +326,7 @@ SUBCOMPONENT ~Hue change~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  -5.0;~
+		REPLACE_TEXTUALLY ~[ 	]uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhHueDeg			= -5.0;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -335,7 +335,7 @@ SUBCOMPONENT ~Hue change~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ ~override/fpyuvgry.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhHueDeg	=  -5.0;~
+		REPLACE_TEXTUALLY ~[ 	]uhHueDeg[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~			~	uhHueDeg			= -5.0;~
 	BUT_ONLY_IF_IT_CHANGES
 END
 
@@ -346,6 +346,6 @@ SUBCOMPONENT ~Selection gamma~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpdraw.glsl~ ~override/fptone.glsl~ BEGIN
 	COPY_EXISTING ~%shader%~ ~%shader%~
-		REPLACE_TEXTUALLY ~uhSelectionGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~ ~uhSelectionGamma	=  2.0;~
+		REPLACE_TEXTUALLY ~[ 	]uhSelectionGamma[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~	~	uhSelectionGamma	=  2.0;~
 	BUT_ONLY_IF_IT_CHANGES
 END

@@ -1,9 +1,9 @@
 uniform lowp	sampler2D	uTex;
-#if HAS_UTEX2
+#if UH_HAS_UTEX2
 uniform lowp	sampler2D	uTex2;
 #endif
 uniform mediump vec2		uTcScale;
-#if HAS_U_COLOR_TONE
+#if UH_HAS_U_COLOR_TONE
 uniform mediump	vec4		uColorTone;
 #endif
 varying mediump	vec2		vTc;
@@ -28,8 +28,15 @@ const lowp mat3  uhHueM		= mat3(
 	0.114 + 0.886 * uhHueU - 0.203 * uhHueW
 );
 
-const lowp vec3 rgbWeights  = vec3(0.299, 0.587, 0.114);
+const lowp vec3 rgbWeights	= vec3(0.299, 0.587, 0.114);
 
+
+const lowp mat3	uhYUVMat	= mat3(
+	1.00000,  1.00000,  1.00000,
+	0.00000, -0.21482,  2.12798,
+	1.28033, -0.38059,  0.00000
+);
+const lowp vec3	uhYUVOff	= vec3(-0.06250, -0.50000, -0.50000);
 
 mediump vec2	uhIUTcScale;
 mediump vec2	uhUVTcY;
@@ -38,13 +45,6 @@ mediump vec2	uhUVTcV;
 ivec2			uhPosUbY;
 ivec2			uhPosUbU;
 ivec2			uhPosUbV;
-
-const lowp mat3		uhYUVMat = mat3(
-	1.00000,  1.00000,  1.00000,
-	0.00000, -0.21482,  2.12798,
-	1.28033, -0.38059,  0.00000
-);
-const lowp vec3		uhYUVOff = vec3(-0.06250, -0.50000, -0.50000);
 
 
 lowp vec3 uhToLinear(in lowp vec3 srgb)
@@ -55,6 +55,7 @@ lowp vec3 uhToLinear(in lowp vec3 srgb)
 	return mix(higher, lower, cutoff);
 }
 
+
 lowp vec3 uhFromLinear(in lowp vec3 rgb)
 {
 	lowp vec3 cutoff = vec3(lessThanEqual(rgb, vec3(0.0030399346)));
@@ -62,6 +63,7 @@ lowp vec3 uhFromLinear(in lowp vec3 rgb)
 	lowp vec3 lower = rgb * 12.9232101808;
 	return mix(higher, lower, cutoff);
 }
+
 
 lowp vec3 uhFetchPixel(in ivec2 pos)
 {
@@ -81,6 +83,7 @@ lowp vec3 uhFetchPixel(in ivec2 pos)
 	) + uhYUVOff;
 	return uhYUVMat * yuv;
 }
+
 
 lowp vec3[16] uhFetchRegion(in ivec2 posUb)
 {
@@ -104,6 +107,7 @@ lowp vec3[16] uhFetchRegion(in ivec2 posUb)
 	);
 }
 
+
 lowp vec3 uhApplyWeightsMat(in lowp vec3 region[16], in lowp mat4 mat)
 {
 	return (
@@ -126,6 +130,7 @@ lowp vec3 uhApplyWeightsMat(in lowp vec3 region[16], in lowp mat4 mat)
 	);
 }
 
+
 lowp mat4 uhCamtullRomMat(in mediump vec2 posFr)
 {
 	lowp mat2x4 axes = transpose(mat4x2(
@@ -138,10 +143,12 @@ lowp mat4 uhCamtullRomMat(in mediump vec2 posFr)
 	return outerProduct(axes[0], axes[1]);
 }
 
+
 lowp vec3 uhCatmullRomInterp(in lowp vec3 region[16], in mediump vec2 posFr)
 {
 	return uhApplyWeightsMat(region, uhCamtullRomMat(posFr));
 }
+
 
 mediump float uhNormCDF(in mediump float x, in mediump float invScale)
 {
@@ -149,6 +156,7 @@ mediump float uhNormCDF(in mediump float x, in mediump float invScale)
 	mediump float emx2 = exp(sx * sx * -0.5);
 	return sign(x) * 0.56418958 * sqrt(1.0 - emx2) * (0.88622692 + emx2 * (emx2 * -0.042625 + 0.155)) + 0.5;
 }
+
 
 lowp mat4 uhGaussianBlurMat(in mediump vec2 posFr, in mediump float scale)
 {
@@ -182,10 +190,12 @@ lowp mat4 uhGaussianBlurMat(in mediump vec2 posFr, in mediump float scale)
 	return outerProduct(axes[1], axes[0]);
 }
 
+
 lowp vec3 uhGaussianBlur(in lowp vec3 region[16], in mediump vec2 posFr, in mediump float scale)
 {
 	return uhApplyWeightsMat(region, uhGaussianBlurMat(posFr, scale));
 }
+
 
 lowp vec3 uhYIQRotate(in lowp vec3 color)
 {
@@ -196,13 +206,14 @@ lowp vec3 uhYIQRotate(in lowp vec3 color)
 	return uhHueM * color;
 }
 
+
 lowp vec4 uhMakeFragColor(in lowp vec3 rgb, in lowp float alpha, in lowp float gamma)
 {
 	lowp vec3 color = uhYIQRotate(rgb);
 	lowp float grey = dot(color, rgbWeights);
 
 	color = color * uhSat + uhSatNV * grey;
-	#if HAS_U_COLOR_TONE
+	#if UH_HAS_U_COLOR_TONE
 	lowp vec3 tone = grey * uhToLinear(uColorTone.rgb);
 	color = mix(color, tone, uColorTone.a);
 	#endif
@@ -212,6 +223,7 @@ lowp vec4 uhMakeFragColor(in lowp vec3 rgb, in lowp float alpha, in lowp float g
 
 	return vec4(uhFromLinear(color), alpha);
 }
+
 
 void main()
 {
@@ -244,7 +256,7 @@ void main()
 
 	outColor *= uhToLinear(vColor.rgb);
 
-	#if HAS_UTEX2
+	#if UH_HAS_UTEX2
 	gl_FragColor = uhMakeFragColor(outColor, texture(uTex2, vTc)[0], uhGamma);
 	#else
 	gl_FragColor = uhMakeFragColor(outColor, 1.0, uhGamma);

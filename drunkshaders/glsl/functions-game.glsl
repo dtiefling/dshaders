@@ -1,13 +1,13 @@
 uniform lowp	sampler2D	uTex;
-#if HAS_BLUR_AMOUNT
+#if UH_HAS_BLUR_AMOUNT
 uniform lowp	float		uSpriteBlurAmount;
 #endif
 uniform mediump vec2		uTcScale;
-#if HAS_U_COLOR_TONE
+#if UH_HAS_U_COLOR_TONE
 uniform highp	vec4		uColorTone;
 #endif
 varying mediump	vec2		vTc;
-#if HAS_VREF
+#if UH_HAS_VREF
 varying highp	vec2		vRef;
 #endif
 varying lowp	vec4		vColor;
@@ -39,14 +39,14 @@ const lowp mat3  uhHueM		= mat3(
 );
 
 
-mediump vec2		uhIUTcScale;
-mediump vec2		uhUVTc;
-ivec2				uhPosUb;
-mediump vec2		uhPosFr;
-lowp vec4			uhRegion[UH_REG_SIZE];
+mediump vec2	uhIUTcScale;
+mediump vec2	uhUVTc;
+ivec2			uhPosUb;
+mediump vec2	uhPosFr;
+lowp vec4		uhRegion[UH_REG_SIZE];
 
-ivec2				uhPosMin;
-ivec2				uhPosMax;
+ivec2			uhPosMin;
+ivec2			uhPosMax;
 
 
 
@@ -230,7 +230,7 @@ lowp vec4 uhMakeFragColor(in lowp vec4 pixel, in lowp float gamma)
 	lowp float grey = dot(color, uhRGBWeights);
 
 	color = color * uhSat + grey * (1.0 - uhSat);
-	#if HAS_U_COLOR_TONE
+	#if UH_HAS_U_COLOR_TONE
 	lowp vec3 tone = grey * uhToLinear(uColorTone.rgb);
 	color = mix(color, tone, uColorTone.a);
 	#endif
@@ -288,6 +288,7 @@ lowp float uhBoundMul(in lowp float x, in lowp float low, in lowp float high, in
 }
 
 
+#if HAS_OUTLINE_PARAMS
 mediump vec2 uhOutlineData(in int radius)
 {
 	mediump float dist2 = uhOutlineSize * uhOutlineSize;
@@ -311,6 +312,7 @@ mediump vec2 uhOutlineData(in int radius)
 	}
 	return vec2(sqrt(dist2), maxAlpha);
 }
+#endif
 
 
 bool uhProbableCircle()
@@ -343,7 +345,7 @@ void main()
 	uhPosMin = ivec2(0);
 	uhPosMax = ivec2(uhIUTcScale) - 1;
 
-	#if HAS_VREF
+	#if UH_HAS_VREF
 	ivec2 tileStart = ivec2(vRef * uhIUTcScale);
 	uhPosMin = max(uhPosMin, tileStart);
 	uhPosMax = min(uhPosMax, tileStart + 63);
@@ -363,7 +365,7 @@ void main()
 	}
 
 	// Prevent visible edges of blended object tiles
-	#if NEEDS_HEURISTIC_BORDER
+	#if UH_NEEDS_HEURISTIC_BORDER
 	lowp float texRelError = uhRelColorDist(refTexColor.rgb, texColor.rgb);
 	lowp vec3 darkColor = min(
 			min(uhFetchPixel(ivec2(0, 0)).rgb, uhFetchPixel(ivec2(1, 0)).rgb),
@@ -379,7 +381,7 @@ void main()
 	#endif
 
 	// Prevent visible edges of overlay object tiles
-	#if NEEDS_HEURISTIC_BORDER
+	#if UH_NEEDS_HEURISTIC_BORDER
 	if (uhCatmullRom)
 	{
 		lowp float texError = uhRGBDist(refTexColor.rgb, texColor.rgb);
@@ -395,7 +397,7 @@ void main()
 	#endif
 
 	// Prevent edges of transparent animations
-	#if NEEDS_HEURISTIC_BORDER
+	#if UH_NEEDS_HEURISTIC_BORDER
 	if (outColor.a - nnColor.a > 0.25)
 	{
 		outColor.a = nnColor.a;
@@ -407,11 +409,14 @@ void main()
 	#endif
 
 	// Different vColor modes
-	#if VCOLOR_MUL == 1
+	#if UH_VCOLOR_MODE == 1
 	// Font
 	outColor = vec4(uhToLinear(vColor.rgb), vColor.a * outColor.r);
-	#elif VCOLOR_MUL == 2
+	#elif UH_VCOLOR_MODE == 2 && !HAS_DRAW_PARAMS
 	// Day / night
+	outColor *= uhColorToLinear(vColor);
+	#elif UH_VCOLOR_MODE == 2 && HAS_DRAW_PARAMS
+	// Day / night + fixed alpha gamma for cases such as selection circles
 	if (uhSelectionGamma == 1.0 || !uhProbableCircle())
 	{
 		outColor *= uhColorToLinear(vColor);
@@ -425,6 +430,7 @@ void main()
 
 	lowp float gamma = uhGamma;
 
+    #if HAS_DRAW_PARAMS
 	// Font gamma hack for Infinity UI++
 	if (uhFontHackGamma > 0.0 && uhFontHackGamma != uhGamma)
 	{
@@ -434,7 +440,11 @@ void main()
 		fontHackMatch *= uhBoundMul(cosSim, 0.997, 1.0, 0.002);
 		gamma = uhFontHackGamma * fontHackMatch + uhGamma * (1.0 - fontHackMatch);
 	}
+	#endif
 
+    #if !HAS_OUTLINE_PARAMS
+	gl_FragColor = uhMakeFragColor(outColor, gamma);
+    #else
 	if (uhOutlineSize <= 0.70710678)
 	{
 		gl_FragColor = uhMakeFragColor(outColor, gamma);
@@ -445,7 +455,8 @@ void main()
 	mediump vec2 outlineData = uhOutlineData(3);
 	mediump float minDist = max(0.70710678, outlineData[0]);
 	mediump float outlineAlpha = (1.0 - pow(max(0.0, (minDist - 0.70710678) / (uhOutlineSize - 0.70710678)), 0.33333333)) * (outlineData[1] + 3.0) * 0.25;
-	outColor.rgb = (uhToLinear(OUTLINE_COLOR) * outlineAlpha * (1.0 - outColor.a) + outColor.rgb * outColor.a) / (outlineAlpha * (1.0 - outColor.a) + outColor.a);
+	outColor.rgb = (uhToLinear(UH_OUTLINE_COLOR) * outlineAlpha * (1.0 - outColor.a) + outColor.rgb * outColor.a) / (outlineAlpha * (1.0 - outColor.a) + outColor.a);
 	outColor.a = 1.0 - (1.0 - outColor.a) * (1.0 - outlineAlpha);
 	gl_FragColor = uhMakeFragColor(outColor, gamma);
+	#endif
 }
