@@ -17,4 +17,5 @@ const lowp float	uhHueDeg			=  0.0;	// hue rotation in YIQ space in degrees, pla
 #define HAS_DRAW_PARAMS		0
 #define HAS_OUTLINE_PARAMS	0
 
+#define UH_REG_RADIUS		2
 

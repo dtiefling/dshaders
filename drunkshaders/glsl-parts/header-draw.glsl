@@ -21,4 +21,6 @@ const lowp float 	uhSelectionGamma	=  1.0;	// fpdraw-specific; increase to get t
 #define HAS_DRAW_PARAMS		1
 #define HAS_OUTLINE_PARAMS	0
 
+#define UH_REG_RADIUS		2
+
 

@@ -1,3 +1,10 @@
+(0.3.2)
+Some refactor: consistent names, skipping unrelated parameters.
+Changed file names to less confusing, as they should not be copied to override
+manually (there is an install option for that!).
+Performed benchmarks, fixed some parameters (now 90fps on my machine is smooth,
+the previous version picked around 55fps).
+
 (0.3.1)
 Code changes in attempt to work it for the tester (@Parys at beamdog forums).
 Added feature that makes the sprite circles thinner (and causes all the

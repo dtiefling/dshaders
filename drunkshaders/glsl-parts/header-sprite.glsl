@@ -19,4 +19,6 @@ const mediump float	uhOutlineSize		=  0.0;	// up to 3.5; 0.0 to disable; default
 #define HAS_DRAW_PARAMS		0
 #define HAS_OUTLINE_PARAMS	1
 
+#define UH_REG_RADIUS		3
+
 

@@ -17,7 +17,6 @@ const lowp vec3 uhRGBWeights	= vec3(0.299, 0.587, 0.114);
 const lowp vec3 uhGFTextColor	= vec3(1.00, 0.95, 0.55);
 
 
-#define UH_REG_RADIUS			3
 #define UH_REG_WIDTH			(UH_REG_RADIUS * 2)
 #define UH_REG_HEIGHT			UH_REG_WIDTH
 #define UH_REG_SIZE				(UH_REG_WIDTH * UH_REG_WIDTH)
@@ -101,6 +100,12 @@ void uhFetchRegion()
 }
 
 
+lowp vec4 uhFetchPixelFast(in ivec2 pos)
+{
+	return uhRegion[pos.y * UH_REG_WIDTH + pos.x + UH_REG_INDEX_OFFSET];
+}
+
+
 lowp vec4 uhFetchPixel(in ivec2 pos)
 {
 	if (
@@ -111,23 +116,23 @@ lowp vec4 uhFetchPixel(in ivec2 pos)
 	{
 		return uhFetchTexel(pos);
 	}
-	return uhRegion[pos.y * UH_REG_WIDTH + pos.x + UH_REG_INDEX_OFFSET];
+	return uhFetchPixelFast(pos);
 }
 
 
 lowp vec4 uhFetchNN()
 {
-	return uhFetchPixel(ivec2(uhPosFr + vec2(0.5)));
+	return uhFetchPixelFast(ivec2(uhPosFr + vec2(0.5)));
 }
 
 
 lowp vec4 uhFetchLinear()
 {
 	return (
-		uhFetchPixel(ivec2(0, 0)) * (1.0 - uhPosFr.y) * (1.0 - uhPosFr.x) +
-		uhFetchPixel(ivec2(1, 0)) * (1.0 - uhPosFr.y) * uhPosFr.x +
-		uhFetchPixel(ivec2(0, 1)) * uhPosFr.y         * (1.0 - uhPosFr.x) +
-		uhFetchPixel(ivec2(1, 1)) * uhPosFr.y         * uhPosFr.x);
+		uhFetchPixelFast(ivec2(0, 0)) * (1.0 - uhPosFr.y) * (1.0 - uhPosFr.x) +
+		uhFetchPixelFast(ivec2(1, 0)) * (1.0 - uhPosFr.y) * uhPosFr.x +
+		uhFetchPixelFast(ivec2(0, 1)) * uhPosFr.y         * (1.0 - uhPosFr.x) +
+		uhFetchPixelFast(ivec2(1, 1)) * uhPosFr.y         * uhPosFr.x);
 }
 
 
@@ -139,21 +144,45 @@ lowp vec4 uhFetchCatmullRom()
 		uhPosFr * (uhPosFr * (uhPosFr * -1.5 + 2.0) + 0.5),
 		uhPosFr *  uhPosFr * (uhPosFr *  0.5 - 0.5)
 	);
+/*
 	lowp vec4 sum = vec4(0.0);
 
 	for (int y = -1; y <= 2; ++y)
 	{
 		for (int x = -1; x <= 2; ++x)
 		{
-			sum += uhFetchPixel(ivec2(x, y)) * axes[x + 1][0] * axes[y + 1][1];
+			sum += uhFetchPixelFast(ivec2(x, y)) * axes[x + 1][0] * axes[y + 1][1];
 		}
 	}
 
 	return sum;
+*/
+	return (
+			(
+				uhFetchPixelFast(ivec2( 2,  2)) * axes[3][0] +
+				uhFetchPixelFast(ivec2(-1,  2)) * axes[0][0] +
+				uhFetchPixelFast(ivec2( 1,  2)) * axes[2][0] +
+				uhFetchPixelFast(ivec2( 0,  2)) * axes[1][0]) * axes[3][1] +
+			(
+				uhFetchPixelFast(ivec2( 2, -1)) * axes[3][0] +
+				uhFetchPixelFast(ivec2(-1, -1)) * axes[0][0] +
+				uhFetchPixelFast(ivec2( 1, -1)) * axes[2][0] +
+				uhFetchPixelFast(ivec2( 0, -1)) * axes[1][0]) * axes[0][1] +
+			(
+				uhFetchPixelFast(ivec2( 2,  1)) * axes[3][0] +
+				uhFetchPixelFast(ivec2(-1,  1)) * axes[0][0] +
+				uhFetchPixelFast(ivec2( 1,  1)) * axes[2][0] +
+				uhFetchPixelFast(ivec2( 0,  1)) * axes[1][0]) * axes[2][1] +
+			(
+				uhFetchPixelFast(ivec2( 2,  0)) * axes[3][0] +
+				uhFetchPixelFast(ivec2(-1,  0)) * axes[0][0] +
+				uhFetchPixelFast(ivec2( 1,  0)) * axes[2][0] +
+				uhFetchPixelFast(ivec2( 0,  0)) * axes[1][0]) * axes[1][1]
+		);
 }
 
 
-mediump float uhNormCDF(in mediump float x, in mediump float invScale)
+lowp float uhNormCDF(in mediump float x, in mediump float invScale)
 {
 	mediump float sx = x * invScale;
 	mediump float emx2 = exp(sx * sx * -0.5);
@@ -190,27 +219,52 @@ lowp vec4 uhFetchBlurry(in mediump float scale)
 		(stopsX[4] - stopsX[3]) * mulX,
 		(stopsY[4] - stopsY[3]) * mulY
 	);
+
+/*
 	lowp vec4 sum = vec4(0.0);
 
 	for (int y = -1; y <= 2; ++y)
 	{
 		for (int x = -1; x <= 2; ++x)
 		{
-			sum += uhFetchPixel(ivec2(x, y)) * axes[x + 1][0] * axes[y + 1][1];
+			sum += uhFetchPixelFast(ivec2(x, y)) * axes[x + 1][0] * axes[y + 1][1];
 		}
 	}
 
 	return sum;
+*/
+	return (
+			(
+				uhFetchPixelFast(ivec2( 2,  2)) * axes[3][0] +
+				uhFetchPixelFast(ivec2(-1,  2)) * axes[0][0] +
+				uhFetchPixelFast(ivec2( 1,  2)) * axes[2][0] +
+				uhFetchPixelFast(ivec2( 0,  2)) * axes[1][0]) * axes[3][1] +
+			(
+				uhFetchPixelFast(ivec2( 2, -1)) * axes[3][0] +
+				uhFetchPixelFast(ivec2(-1, -1)) * axes[0][0] +
+				uhFetchPixelFast(ivec2( 1, -1)) * axes[2][0] +
+				uhFetchPixelFast(ivec2( 0, -1)) * axes[1][0]) * axes[0][1] +
+			(
+				uhFetchPixelFast(ivec2( 2,  1)) * axes[3][0] +
+				uhFetchPixelFast(ivec2(-1,  1)) * axes[0][0] +
+				uhFetchPixelFast(ivec2( 1,  1)) * axes[2][0] +
+				uhFetchPixelFast(ivec2( 0,  1)) * axes[1][0]) * axes[2][1] +
+			(
+				uhFetchPixelFast(ivec2( 2,  0)) * axes[3][0] +
+				uhFetchPixelFast(ivec2(-1,  0)) * axes[0][0] +
+				uhFetchPixelFast(ivec2( 1,  0)) * axes[2][0] +
+				uhFetchPixelFast(ivec2( 0,  0)) * axes[1][0]) * axes[1][1]
+		);
 }
 
 
 lowp vec4 uhFetchRefTextColor()
 {
 	return uhColorToLinear(
-		uhColorFromLinear(uhFetchPixel(ivec2(0, 0))) * (1.0 - uhPosFr.y) * (1.0 - uhPosFr.x) +
-		uhColorFromLinear(uhFetchPixel(ivec2(1, 0))) * (1.0 - uhPosFr.y) * uhPosFr.x +
-		uhColorFromLinear(uhFetchPixel(ivec2(0, 1))) * uhPosFr.y         * (1.0 - uhPosFr.x) +
-		uhColorFromLinear(uhFetchPixel(ivec2(1, 1))) * uhPosFr.y         * uhPosFr.x);
+		uhColorFromLinear(uhFetchPixelFast(ivec2(0, 0))) * (1.0 - uhPosFr.y) * (1.0 - uhPosFr.x) +
+		uhColorFromLinear(uhFetchPixelFast(ivec2(1, 0))) * (1.0 - uhPosFr.y) * uhPosFr.x +
+		uhColorFromLinear(uhFetchPixelFast(ivec2(0, 1))) * uhPosFr.y         * (1.0 - uhPosFr.x) +
+		uhColorFromLinear(uhFetchPixelFast(ivec2(1, 1))) * uhPosFr.y         * uhPosFr.x);
 }
 
 
@@ -322,6 +376,8 @@ bool uhProbableCircle()
 	{
 		return false;
 	}
+
+/*
 	for (int y = -1; y <= 2; ++y)
 	{
 		for (int x = -1; x <= 2; ++x)
@@ -332,6 +388,27 @@ bool uhProbableCircle()
 			}
 		}
 	}
+*/
+	if (!all(equal(uhRegion[                       UH_REG_INDEX_OFFSET], vec4(1.0)))) return false;
+	if (!all(equal(uhRegion[                   1 + UH_REG_INDEX_OFFSET], vec4(1.0)))) return false;
+	if (!all(equal(uhRegion[                 - 1 + UH_REG_INDEX_OFFSET], vec4(1.0)))) return false;
+	if (!all(equal(uhRegion[                   2 + UH_REG_INDEX_OFFSET], vec4(1.0)))) return false;
+
+	if (!all(equal(uhRegion[    UH_REG_WIDTH +     UH_REG_INDEX_OFFSET], vec4(1.0)))) return false;
+	if (!all(equal(uhRegion[    UH_REG_WIDTH + 1 + UH_REG_INDEX_OFFSET], vec4(1.0)))) return false;
+	if (!all(equal(uhRegion[    UH_REG_WIDTH - 1 + UH_REG_INDEX_OFFSET], vec4(1.0)))) return false;
+	if (!all(equal(uhRegion[    UH_REG_WIDTH + 2 + UH_REG_INDEX_OFFSET], vec4(1.0)))) return false;
+
+	if (!all(equal(uhRegion[   -UH_REG_WIDTH +     UH_REG_INDEX_OFFSET], vec4(1.0)))) return false;
+	if (!all(equal(uhRegion[   -UH_REG_WIDTH + 1 + UH_REG_INDEX_OFFSET], vec4(1.0)))) return false;
+	if (!all(equal(uhRegion[   -UH_REG_WIDTH - 1 + UH_REG_INDEX_OFFSET], vec4(1.0)))) return false;
+	if (!all(equal(uhRegion[   -UH_REG_WIDTH + 2 + UH_REG_INDEX_OFFSET], vec4(1.0)))) return false;
+
+	if (!all(equal(uhRegion[2 * UH_REG_WIDTH +     UH_REG_INDEX_OFFSET], vec4(1.0)))) return false;
+	if (!all(equal(uhRegion[2 * UH_REG_WIDTH + 1 + UH_REG_INDEX_OFFSET], vec4(1.0)))) return false;
+	if (!all(equal(uhRegion[2 * UH_REG_WIDTH - 1 + UH_REG_INDEX_OFFSET], vec4(1.0)))) return false;
+	if (!all(equal(uhRegion[2 * UH_REG_WIDTH + 2 + UH_REG_INDEX_OFFSET], vec4(1.0)))) return false;
+
 	return true;
 }
 
@@ -368,8 +445,8 @@ void main()
 	#if UH_NEEDS_HEURISTIC_BORDER
 	lowp float texRelError = uhRelColorDist(refTexColor.rgb, texColor.rgb);
 	lowp vec3 darkColor = min(
-			min(uhFetchPixel(ivec2(0, 0)).rgb, uhFetchPixel(ivec2(1, 0)).rgb),
-			min(uhFetchPixel(ivec2(0, 1)).rgb, uhFetchPixel(ivec2(1, 1)).rgb));
+			min(uhFetchPixelFast(ivec2(0, 0)).rgb, uhFetchPixelFast(ivec2(1, 0)).rgb),
+			min(uhFetchPixelFast(ivec2(0, 1)).rgb, uhFetchPixelFast(ivec2(1, 1)).rgb));
 	if (texRelError > 0.75)
 	{
 		outColor.rgb = darkColor;
@@ -398,13 +475,13 @@ void main()
 
 	// Prevent edges of transparent animations
 	#if UH_NEEDS_HEURISTIC_BORDER
-	if (outColor.a - nnColor.a > 0.25)
+	if (nnColor.a == 0.0 || texColor.a == 0.0)
 	{
-		outColor.a = nnColor.a;
+		outColor.a = 0.0;
 	}
-	else if (outColor.a - nnColor.a > 0.1875)
+	if (all(equal(nnColor.rgb, vec3(0.0))) || all(equal(texColor.rgb, vec3(0.0))))
 	{
-		outColor.a = mix(nnColor.a, nnColor.a, (outColor.a - nnColor.a - 0.1875) * 16.0);
+		outColor.rgb = vec3(0.0);
 	}
 	#endif
 
@@ -413,10 +490,10 @@ void main()
 	// Font
 	outColor = vec4(uhToLinear(vColor.rgb), vColor.a * outColor.r);
 	#elif UH_VCOLOR_MODE == 2 && !HAS_DRAW_PARAMS
-	// Day / night
+	// Colorized output (fog of war, time of the day)
 	outColor *= uhColorToLinear(vColor);
 	#elif UH_VCOLOR_MODE == 2 && HAS_DRAW_PARAMS
-	// Day / night + fixed alpha gamma for cases such as selection circles
+	// Colorized output (fog of war, time of the day) + fixed alpha gamma for cases such as selection circles
 	if (uhSelectionGamma == 1.0 || !uhProbableCircle())
 	{
 		outColor *= uhColorToLinear(vColor);
