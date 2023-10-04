@@ -21,7 +21,7 @@ QUICK_MENU
 	~Moderate color adjustments + BGEE 1.3-like setup (C-R everywhere)~ BEGIN 1000 1125 1225 1314 1415 1505 END
 	~drunktiefling's choice~ BEGIN 1000 1125 1215 1314 1415 1505 END
 	~drunktiefling's choice for Infinity UI++~ BEGIN 1000 1125 1215 1314 1415 1515 END
-	~BGEE 1.3-like setup (Catmull-Rom everywhere) + thinner selection circles (@Parys)~ BEGIN 1000 1125 1225 1705 END
+	~BGEE 1.3-like setup (Catmull-Rom everywhere) + thinner selection circles (@Parys)~ BEGIN 1000 1125 1225 1705 1805 END
 END
 
 
@@ -32,7 +32,6 @@ BEGIN ~[Quick menu placeholder]~
 // Main component
 BEGIN ~Adjustable shaders coded by a drunk tiefling [Main component]~ DESIGNATED 1000
 REQUIRE_PREDICATE GAME_IS ~bgee bg2ee eet iwdee pstee~ ~This mod requires an Enhanced Edition game to be installed.~
-
 COPY_EXISTING ~%MOD_FOLDER%/glsl-parts/flags-fpfont.glsl~ ~override/fpfont.glsl~
 	INSERT_FILE 0 ~%MOD_FOLDER%/glsl-parts/header-default.glsl~
 	APPEND_FILE   ~%MOD_FOLDER%/glsl-parts/functions-game.glsl~
@@ -57,7 +56,16 @@ COPY_EXISTING ~%MOD_FOLDER%/glsl-parts/flags-fpyuv.glsl~ ~override/fpyuv.glsl~
 COPY_EXISTING ~%MOD_FOLDER%/glsl-parts/flags-fpyuvgry.glsl~ ~override/fpyuvgry.glsl~
 	INSERT_FILE 0 ~%MOD_FOLDER%/glsl-parts/header-default.glsl~
 	APPEND_FILE   ~%MOD_FOLDER%/glsl-parts/functions-movies.glsl~
-
+ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~[ 	]uhOutlineSize[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~		~	uhOutlineSize	    =  2.0;~
+	BUT_ONLY_IF_IT_CHANGES
+END
+ACTION_FOR_EACH shader IN ~override/fpselect.glsl~ BEGIN
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~[ 	]uhOutlineSize[ 	]*=[ 	]*[+-]?[0-9]*\.?[0-9]*;~		~	uhOutlineSize	    =  3.5;~
+	BUT_ONLY_IF_IT_CHANGES
+END
 
 // Catmull-Rom
 BEGIN ~Use Catmull-Rom interpolation for sprites only~ DESIGNATED 1105
@@ -113,7 +121,7 @@ ACTION_FOR_EACH shader IN ~override/fpsprite.glsl~ ~override/fpselect.glsl~ BEGI
 END
 
 
-// Color fixes
+// Color intensity changes
 BEGIN ~Use moderate color adjustments (gamma +2%, contrast +10%, brightness +5%), sprites only~ DESIGNATED 1304
 SUBCOMPONENT ~Color adjustments~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
@@ -347,7 +355,7 @@ END
 
 
 // Selection gamma
-BEGIN ~[Experimental] Make sprite selection circles thinner and object selection highlight more transparent~ DESIGNATED 1705
+BEGIN ~Make sprite selection circles thinner and object selection highlight more transparent~ DESIGNATED 1705
 SUBCOMPONENT ~Selection gamma~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
 ACTION_FOR_EACH shader IN ~override/fpdraw.glsl~ ~override/fptone.glsl~ BEGIN

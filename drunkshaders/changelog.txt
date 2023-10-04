@@ -1,3 +1,7 @@
+(0.3.4)
+MAJOR readme update.
+Fixed default outlines when no component is chosen.
+
 (0.3.3)
 Added glslopt as an option to the processing pipe (Linux/Windows x86_64/x86
 setups).
