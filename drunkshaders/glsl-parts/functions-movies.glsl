@@ -38,14 +38,6 @@ const lowp mat3	uhYUVMat	= mat3(
 );
 const lowp vec3	uhYUVOff	= vec3(-0.06250, -0.50000, -0.50000);
 
-mediump vec2	uhIUTcScale;
-mediump vec2	uhUVTcY;
-mediump vec2	uhUVTcU;
-mediump vec2	uhUVTcV;
-ivec2			uhPosUbY;
-ivec2			uhPosUbU;
-ivec2			uhPosUbV;
-
 
 lowp vec3 uhToLinear(in lowp vec3 srgb)
 {
@@ -65,7 +57,7 @@ lowp vec3 uhFromLinear(in lowp vec3 rgb)
 }
 
 
-lowp vec3 uhFetchPixel(in ivec2 pos)
+lowp vec3 uhFetchPixel(in ivec2 pos, in mediump vec2 uhIUTcScale, in ivec2 uhPosUbY, in ivec2 uhPosUbU, in ivec2 uhPosUbV)
 {
     ivec2 posY = uhPosUbY + pos;
     ivec2 posU = uhPosUbU + pos;
@@ -85,25 +77,25 @@ lowp vec3 uhFetchPixel(in ivec2 pos)
 }
 
 
-lowp vec3[16] uhFetchRegion(in ivec2 posUb)
+lowp vec3[16] uhFetchRegion(in ivec2 posUb, in mediump vec2 uhIUTcScale, in ivec2 uhPosUbY, in ivec2 uhPosUbU, in ivec2 uhPosUbV)
 {
 	return vec3[16](
-		uhFetchPixel(posUb + ivec2(-1, -1)),
-		uhFetchPixel(posUb + ivec2( 0, -1)),
-		uhFetchPixel(posUb + ivec2( 1, -1)),
-		uhFetchPixel(posUb + ivec2( 2, -1)),
-		uhFetchPixel(posUb + ivec2(-1,  0)),
-		uhFetchPixel(posUb),
-		uhFetchPixel(posUb + ivec2( 1,  0)),
-		uhFetchPixel(posUb + ivec2( 2,  0)),
-		uhFetchPixel(posUb + ivec2(-1,  1)),
-		uhFetchPixel(posUb + ivec2( 0,  1)),
-		uhFetchPixel(posUb + ivec2( 1,  1)),
-		uhFetchPixel(posUb + ivec2( 2,  1)),
-		uhFetchPixel(posUb + ivec2(-1,  2)),
-		uhFetchPixel(posUb + ivec2( 0,  2)),
-		uhFetchPixel(posUb + ivec2( 1,  2)),
-		uhFetchPixel(posUb + ivec2( 2,  2))
+		uhFetchPixel(posUb + ivec2(-1, -1), uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV),
+		uhFetchPixel(posUb + ivec2( 0, -1), uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV),
+		uhFetchPixel(posUb + ivec2( 1, -1), uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV),
+		uhFetchPixel(posUb + ivec2( 2, -1), uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV),
+		uhFetchPixel(posUb + ivec2(-1,  0), uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV),
+		uhFetchPixel(posUb, uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV),
+		uhFetchPixel(posUb + ivec2( 1,  0), uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV),
+		uhFetchPixel(posUb + ivec2( 2,  0), uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV),
+		uhFetchPixel(posUb + ivec2(-1,  1), uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV),
+		uhFetchPixel(posUb + ivec2( 0,  1), uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV),
+		uhFetchPixel(posUb + ivec2( 1,  1), uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV),
+		uhFetchPixel(posUb + ivec2( 2,  1), uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV),
+		uhFetchPixel(posUb + ivec2(-1,  2), uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV),
+		uhFetchPixel(posUb + ivec2( 0,  2), uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV),
+		uhFetchPixel(posUb + ivec2( 1,  2), uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV),
+		uhFetchPixel(posUb + ivec2( 2,  2), uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV)
 	);
 }
 
@@ -227,16 +219,15 @@ lowp vec4 uhMakeFragColor(in lowp vec3 rgb, in lowp float alpha, in lowp float g
 
 void main()
 {
-	uhIUTcScale	= 1.0 / uTcScale;
-	uhUVTcY		= vTc  * uhIUTcScale - 0.5;
-	uhUVTcU		= vTcU * uhIUTcScale - 0.5;
-	uhUVTcV		= vTcV * uhIUTcScale - 0.5;
-	uhPosUbY	= ivec2(uhUVTcY);
-	uhPosUbU	= ivec2(uhUVTcU);
-	uhPosUbV	= ivec2(uhUVTcV);
-
-	mediump vec2 posFr = uhUVTcY - uhPosUbY;
-	lowp vec3 region[16] = uhFetchRegion(ivec2(0, 0));
+	mediump vec2 uhIUTcScale	= 1.0 / uTcScale;
+	mediump vec2 uhUVTcY		= vTc  * uhIUTcScale - 0.5;
+	mediump vec2 uhUVTcU		= vTcU * uhIUTcScale - 0.5;
+	mediump vec2 uhUVTcV		= vTcV * uhIUTcScale - 0.5;
+	ivec2 uhPosUbY				= ivec2(uhUVTcY);
+	ivec2 uhPosUbU				= ivec2(uhUVTcU);
+	ivec2 uhPosUbV				= ivec2(uhUVTcV);
+	mediump vec2 posFr			= fract(uhUVTcY);
+	lowp vec3 region[16]		= uhFetchRegion(ivec2(0, 0), uhIUTcScale, uhPosUbY, uhPosUbU, uhPosUbV);
 	lowp vec3 outColor;
 
 	if (uhCatmullRom)

@@ -1,3 +1,11 @@
+(0.3.3)
+Added glslopt as an option to the processing pipe (Linux/Windows x86_64/x86
+setups).
+Furher optimizations based on glslopt outputs.
+Fix sharpening bug.
+Changed packaging method so it includes Linux builds (needed in order to bundle
+the right glslopt build).
+
 (0.3.2)
 Some refactor: consistent names, skipping unrelated parameters.
 Changed file names to less confusing, as they should not be copied to override
