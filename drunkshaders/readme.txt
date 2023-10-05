@@ -612,8 +612,8 @@ That's how [drunktiefling's choice](#quick-menu) looks like:
   Yes, it is a [Sci-Hub](https://sci-hub.se/) link. Love the researchers,
   not the publishers.
 * [Affine color manipulation](http://beesbuzz.biz/code/16-hsv-color-transforms)
-  post by fluffycritter that inspired the hue modification implemented
-  in this mod.
+  post by [fluffy-critter](https://github.com/fluffy-critter) that inspired
+  the hue modification implemented in this mod.
 * [GLSL optimizer](https://github.com/jamienicol/glsl-optimizer) introduced by
   [Aras Pranckevičius](https://github.com/aras-p), in a branch forked by
   [Jamie Nicol](https://github.com/jamienicol).
