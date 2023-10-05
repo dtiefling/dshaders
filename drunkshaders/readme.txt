@@ -1,4 +1,3 @@
-
 # drunktiefling's shaders
 
 Readme last updated at version: *0.3.4*.
@@ -73,6 +72,11 @@ of said *Shader Pack*. As such, these two mods are **not compatible**.
 BG2EE with 2.6-series patch. As it's all about engine, mods such as EET
 are compatible by default.
 
+This works on the PC platforms, with multiple operating systems. Some or all
+of the other platforms are too different when it comes to technical choices,
+like using SDL rather than OpenGL. Shaders would not make much sense
+on such devices.
+
 **Note:** Some settings in the game may indirectly disable some features
 of this mod. On Windows platform, you should **disable** "Alternate Renderer"
 in the graphic options of the games in order to see anything that this mod
@@ -97,21 +101,16 @@ would be remarkably hard to implement otherwise.
 
 ## Installation
 
-This is a [WeiDU](https://github.com/WeiDUorg/weidu/releases) mod. Extract
-it in the game installation directory.
+This is a [WeiDU](https://github.com/WeiDUorg/weidu/releases) mod.
+Download the right archive from the
+[project releases](https://github.com/dtiefling/dshaders/releases).
+Then extract it in the game installation directory.
 
-Unless you know extra WeiDU options you might want to specify,
-`weinstall drunkshaders`
-would do. Make sure to have weinstall in your `PATH` (or use absolute path,
-whatever).
-
-On Windows, you might find it convenient to make yet another copy
-of WeiDU (`weidu.exe`) and name it `Setup-drunkshaders.exe`.
-Then you can as well remove it and make new copy before
-uninstalling/reinstalling. This file is never modified otherwise.
-
-If you need this, get archive with your `weidu.exe`
-on https://github.com/WeiDUorg/weidu/releases .
+Current versions are shipped with WeiDU for all supported platforms.
+For example, on Windows you would have to execute `setup-drunkshaders.exe`
+file and answer a few questions. Proper steps for Linux and Mac OS X are
+analogous, taken that files you might want to run don't have `.exe`
+at the end of the name.
 
 ## Options overview
 
