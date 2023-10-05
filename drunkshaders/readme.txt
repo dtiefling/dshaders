@@ -583,7 +583,7 @@ It cannot be ommited that the actual beauty of this mod starts when you pick you
 	 - [GCC](https://gcc.gnu.org/),
 	 - [MSYS2](https://www.msys2.org/),
 	 - [MinGW](https://www.mingw-w64.org/),
-	 - [CMake](about:blank).
+	 - [CMake](https://cmake.org/).
 * [Pluma](https://github.com/mate-desktop/pluma) -
   The [MATE](https://mate-desktop.org/) text editor.
 
