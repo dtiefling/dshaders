@@ -496,7 +496,9 @@ Installing the main component already indicates a change to how things are displ
 Catmull-Rom interponation is one of the key features of this mod. Top to bottom: no Catmull-Rom, Catmull-Rom for sprites only, Catmull-Rom everywhere. Extra images on the right also have no outlines, which I believe makes the C-R interpolation look as intended.
 
 [![Mod without settings](https://github.com/dtiefling/dshaders/assets/145703648/43e51a7d-9bde-4fd3-9434-ed1bce0a65e1)](https://github.com/dtiefling/dshaders/assets/145703648/9149cc7f-d743-4e6f-8574-2cbd5058f5e4)
+
 [![Catmull-Rom for sprites](https://github.com/dtiefling/dshaders/assets/145703648/a143c094-1393-4e2a-81a3-4fb02935f69f)](https://github.com/dtiefling/dshaders/assets/145703648/2fde0139-2855-407e-b278-ccc678acb138) [![Catmull-Rom for sprites, no outline](https://github.com/dtiefling/dshaders/assets/145703648/bcabe226-2f58-4e7e-9a53-eedbb19f2741)](https://github.com/dtiefling/dshaders/assets/145703648/f8c7ae7d-9347-42ac-abf7-50fa40e625e4)
+
 [![Catmull-Rom for all shaders](https://github.com/dtiefling/dshaders/assets/145703648/c74d8acb-a4f4-461e-8d7d-f4eb9de5c6a9)](https://github.com/dtiefling/dshaders/assets/145703648/86b909cd-ec98-4322-ba18-2d65aff1c375) [![Catmull-Rom for all shaders, no outline](https://github.com/dtiefling/dshaders/assets/145703648/1718701d-3a12-4b40-ac56-21dd451b0a20)](https://github.com/dtiefling/dshaders/assets/145703648/65f6b9ad-b5b6-478b-b03a-9addada6056c)
 
 ### Color intensity
