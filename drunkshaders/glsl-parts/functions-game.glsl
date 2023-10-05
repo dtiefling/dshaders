@@ -289,25 +289,79 @@ lowp float uhBoundMul(in lowp float x, in lowp float low, in lowp float high, in
 }
 
 
+mediump float uhSegPointDist2(in mediump vec2 p, in mediump vec2 v, in mediump vec2 w) {
+	mediump vec2 vw = v - w;
+	vw *= vw;
+	mediump float l2 = vw.x + vw.y;
+	if (l2 == 0.0)
+	{
+		mediump vec2 vp = v - p;
+		vp *= vp;
+		return vp.x + vp.y;
+	}
+	mediump float t = max(0.0, min(1.0, dot(p - v, w - v) / l2));
+	mediump vec2 prp = v + t * (w - v) - p;
+	prp *= prp;
+	return prp.x + prp.y;
+}
+
+
 #if HAS_OUTLINE_PARAMS
 mediump vec2 uhOutlineData(in int radius, in ivec2 uhPosUb, in mediump vec2 uhPosFr, in lowp vec4 uhRegion[UH_REG_SIZE], in ivec2 uhPosMin, in ivec2 uhPosMax)
 {
-	mediump float dist2 = uhOutlineSize * uhOutlineSize;
+	mediump float dist2 = (uhOutlineSize + 1.0) * (uhOutlineSize + 1.0);
 	lowp float maxAlpha = 0.0;
-	for (int y = -radius; y <= radius; ++y)
+	for (int y = -(radius - 2); y < radius; ++y)
 	{
-		for (int x = -radius; x <= radius; ++x)
+		for (int x = -(radius - 2); x < radius; ++x)
 		{
-			float alpha = uhFetchPixel(ivec2(x, y), uhPosUb, uhRegion, uhPosMin, uhPosMax).a;
-			bool mark = alpha >= 0.0625;
-			maxAlpha = max(maxAlpha, alpha);
-			if (
-					(x != -radius && (uhFetchPixel(ivec2(x - 1, y), uhPosUb, uhRegion, uhPosMin, uhPosMax).a > 0.0625) != mark) ||
-					(y != -radius && (uhFetchPixel(ivec2(x, y - 1), uhPosUb, uhRegion, uhPosMin, uhPosMax).a > 0.0625) != mark))
+			lowp float a00 = uhFetchPixelFast(ivec2(x,     y), uhRegion).a;
+			lowp float a01 = uhFetchPixelFast(ivec2(x + 1, y), uhRegion).a;
+			lowp float a10 = uhFetchPixelFast(ivec2(x,     y + 1), uhRegion).a;
+			lowp float a11 = uhFetchPixelFast(ivec2(x + 1, y + 1), uhRegion).a;
+			lowp float hi = max(max(a00, a01), max(a10, a11));
+			lowp float lo = min(min(a00, a01), min(a10, a11));
+			maxAlpha = max(maxAlpha, hi);
+			if (0.0625 < lo || hi <= 0.0625)
 			{
-				lowp vec2 rel = uhPosFr - vec2(x, y) - UVTC_SHIFT;
-				rel *= rel;
-				dist2 = min(dist2, rel.y + rel.x);
+				continue;
+			}
+			mediump float lineA0 = a00 - 0.0625;
+			mediump float lineAX = (a01 + a11 - a00 - a10) * 0.5;
+			mediump float lineBX = (a10 + a11 - a00 - a01) * 0.5;
+			mediump vec2 segEnds[2];
+			int sec = 0;
+			if (lineBX != 0.0)
+			{
+				mediump float lineBXInv = 1.0 / lineBX;
+				mediump float yx0 = -lineA0 * lineBXInv;
+				mediump float yx1 = -(lineA0 + lineAX) * lineBXInv;
+				if (sec < 2 && 0.0 <= yx0 && yx0 <= 1.0)
+				{
+					segEnds[sec++] = vec2(0.0, yx0);
+				}
+				if (sec < 2 && 0.0 <= yx1 && yx1 <= 1.0)
+				{
+					segEnds[sec++] = vec2(1.0, yx1);
+				}
+			}
+			if (lineAX != 0.0)
+			{
+				mediump float lineAXInv = 1.0 / lineAX;
+				mediump float xy0 = -lineA0 * lineAXInv;
+				mediump float xy1 = -(lineA0 + lineBX) * lineAXInv;
+				if (sec < 2 && 0.0 <= xy0 && xy0 <= 1.0)
+				{
+					segEnds[sec++] = vec2(xy0, 0.0);
+				}
+				if (sec < 2 && 0.0 <= xy1 && xy1 <= 1.0)
+				{
+					segEnds[sec++] = vec2(xy1, 1.0);
+				}
+			}
+			if (sec == 2)
+			{
+				dist2 = min(dist2, uhSegPointDist2(uhPosFr - vec2(x, y), segEnds[0], segEnds[1]));
 			}
 		}
 	}
@@ -443,9 +497,10 @@ void main()
 
 	// Outline implementation
 	mediump vec2 outlineData = uhOutlineData(3, uhPosUb, uhPosFr, uhRegion, uhPosMin, uhPosMax);
-	mediump float minDist = max(0.70710678, outlineData[0]);
-	mediump float outlineAlpha = (1.0 - pow(max(0.0, (minDist - 0.70710678) / (uhOutlineSize - 0.70710678)), 0.33333333)) * (outlineData[1] + 3.0) * 0.25;
-	outColor.rgb = (uhToLinear(UH_OUTLINE_COLOR) * outlineAlpha * (1.0 - outColor.a) + outColor.rgb * outColor.a) / (outlineAlpha * (1.0 - outColor.a) + outColor.a);
+	mediump float distFactor = max(0.0, 1.0 - outlineData[0] / (uhOutlineSize + 0.29289321));
+	distFactor *= distFactor;
+	mediump float outlineAlpha = distFactor * (outlineData[1] + 3.0) * 0.25;
+	outColor.rgb = (uhToLinear(UH_OUTLINE_COLOR) * distFactor * outlineAlpha * (1.0 - outColor.a) + outColor.rgb * outColor.a) / (outlineAlpha * (1.0 - outColor.a) + outColor.a);
 	outColor.a = 1.0 - (1.0 - outColor.a) * (1.0 - outlineAlpha);
 	gl_FragColor = uhMakeFragColor(outColor, gamma);
 	#endif

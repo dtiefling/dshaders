@@ -2,6 +2,7 @@
 
 
 
+
 # drunktiefling's shaders
 
 Readme last updated at version: *0.3.4*.
@@ -22,12 +23,12 @@ The main platform used to gather the community opinion is
 The project is hosted [on GitHub](https://github.com/dtiefling/dshaders),
 so you are welcome to reach the author and describe your issues there as well.
 
-### License
+## License
 
 This distribution of the project is provided on MIT License, which you
 can read in `license.txt` file, which is located alongside this `readme`.
 
-### Scope
+## Scope
 
 This mod makes it possible to configure rendering of different elements
 on the screen other than videos. Every setting but the main component
@@ -61,7 +62,7 @@ features in mind, which include:
   all the shaders, after their content (coming from the installer,
   its presets and manual edition) can be considered final.
 
-### Thanks to Argent77
+## Thanks to Argent77
 
 I mean, really, it would not be possible without Argent77's work
 on [Shader Pack](https://github.com/Argent77/A7-LightingPackEE). Showcase
@@ -71,7 +72,7 @@ has been crucial for the development of this mod.
 Since many ideas were redesigned rather than extended, this is a rewrite
 of said *Shader Pack*. As such, these two mods are **not compatible**.
 
-### Requirements
+## Requirements
 
 BG2EE with 2.6-series patch. As it's all about engine, mods such as EET
 are compatible by default.
@@ -87,7 +88,7 @@ to **disable** the hardware cursor. It doesn't scale like the cursors
 used to in the traditional game, and it might be confusing when it moves
 faster than some objects.
 
-### Conflicts
+## Conflicts
 
 *Shader Pack* by Argent77. It simply replaces it.
 
@@ -98,7 +99,7 @@ For now, said files are not patched, but replaced. It is mostly justified
 by different approach to color mixing, which - while perhaps possible -
 would be remarkably hard to implement otherwise.
 
-### Installation
+## Installation
 
 This is a [WeiDU](https://github.com/WeiDUorg/weidu/releases) mod. Extract
 it in the game installation directory.
@@ -138,14 +139,14 @@ save some typing if you are interested in one of the following:
  3. BGEE 1.3-like overly simple setup
 	 * [Use Catmull-Rom interpolation for sprites only](#scaling-filters)
 	 * [Disable sprite outlines in all sprites](#outline-changes)
- 4. Recommended color adjustments only
-	 * [Use recommended color adjustments (gamma +2%, contrast +20%, brightness +10%), all shaders](#color-intensity-adjustments)
+ 4. Intense color adjustments only
+	 * [Use intense color adjustments (gamma +2%, contrast +20%, brightness +10%), all shaders](#color-intensity-adjustments)
 	 * [Sharpen slightly (+0.25), all shaders](#gaussian-sharpening--blur)
 	 * [Lower gamma for fonts shader only (set to 0.8)](#font-gamma-fixes)
- 5. Recommended color adjustments + BGEE 1.3-like setup (C-R everywhere)
+ 5. Intense color adjustments + BGEE 1.3-like setup (C-R everywhere)
 	 * [Use Catmull-Rom interpolation in all shaders](#scaling-filters)
 	 * [Disable sprite outlines in all sprites](#outline-changes)
-	 * [Use recommended color adjustments (gamma +2%, contrast +20%, brightness +10%), all shaders](#color-intensity-adjustments)
+	 * [Use intense color adjustments (gamma +2%, contrast +20%, brightness +10%), all shaders](#color-intensity-adjustments)
 	 * [Sharpen slightly (+0.25), all shaders](#gaussian-sharpening--blur)
 	 * [Lower gamma for fonts shader only (set to 0.8)](#font-gamma-fixes)
  6. Moderate color adjustments only
@@ -222,9 +223,9 @@ Available options are:
     brightness +5%), sprites only
  2. Use moderate color adjustments (gamma +2%, contrast +10%,
     brightness +5%), all shaders
- 3. Use recommended color adjustments (gamma +2%, contrast +20%,
+ 3. Use intense color adjustments (gamma +2%, contrast +20%,
     brightness +10%), sprites only
- 4. Use recommended color adjustments (gamma +2%, contrast +20%,
+ 4. Use intense color adjustments (gamma +2%, contrast +20%,
     brightness +10%), all shaders
 
 #### Gaussian sharpening / blur
@@ -453,7 +454,7 @@ Options that you can play with in the not-(yet)-optimized shader files are:
  - `uhOutlineSize` (in `fpsprite.glsl` and `fpselect.glsl`)
 	 - Sprite outline thickness.
 	 - The default imitates BG2EE 2.6, which in this case is
-	   `2.0` for `fpsprite.glsl` and `3.5` for `fpselect.glsl`.
+	   `1.5` for `fpsprite.glsl` and `3.5` for `fpselect.glsl`.
 	 - `0.0` means no outline.
 	 - Going below `1.0` might look inconsistent.
 	   Going below *sqrt(2)* means no outline.
@@ -482,36 +483,51 @@ Options that you can play with in the not-(yet)-optimized shader files are:
 
 ## Preview
 
- - Scaling:
-	 - [Default (no mod)](https://github.com/dtiefling/dshaders/assets/145703648/5a429ab9-cc2a-4553-b3ea-d389abef264c)
-	 - [Nearest neighbor (no mod)](https://github.com/dtiefling/dshaders/assets/145703648/79aec940-22d5-4032-a9a0-59c0055d73e8)
-	 - [BGEE 1.3 (obviously no mod)](https://github.com/dtiefling/dshaders/assets/145703648/5492e51e-4def-442c-8cf0-49c2b5c5c52e)
-	 - [Empty mod setting](https://github.com/dtiefling/dshaders/assets/145703648/1a5d24f6-32c4-4102-b1ea-e160ec557207)
-	 - [Catmull-Rom for sprites](https://github.com/dtiefling/dshaders/assets/145703648/8f028e21-80bf-4109-a732-810a8ccb14dc)
-	 - [Catmull-Rom everywhere](https://github.com/dtiefling/dshaders/assets/145703648/56d09666-076d-4390-8300-48f1e158ccfc)
- - Outlines:
-	 - [Default (no mod)](https://github.com/dtiefling/dshaders/assets/145703648/5a429ab9-cc2a-4553-b3ea-d389abef264c)
-	 - [Empty mod setting](https://github.com/dtiefling/dshaders/assets/145703648/1a5d24f6-32c4-4102-b1ea-e160ec557207)
-	 - [BGEE 1.3 (obviously no mod)](https://github.com/dtiefling/dshaders/assets/145703648/5492e51e-4def-442c-8cf0-49c2b5c5c52e)
-	 - [Disabled via shaders](https://github.com/dtiefling/dshaders/assets/145703648/a9c92379-0cfa-4359-9c73-57c73f4132d3)
- - Selection outlines:
-	 - [Default (no mod)](https://github.com/dtiefling/dshaders/assets/145703648/64eb68d0-f580-49d4-a2a1-166fd407ac0f)
-	 - [Empty mod setting](https://github.com/dtiefling/dshaders/assets/145703648/8294556f-97d1-49d1-be0a-174c35e8b94f)
-	 - [Thinner selection outlines](https://github.com/dtiefling/dshaders/assets/145703648/0b119bc4-380b-4914-849b-57c078a84477)
- - Colors:
-	 - [Empty mod setting](https://github.com/dtiefling/dshaders/assets/145703648/1a5d24f6-32c4-4102-b1ea-e160ec557207)
-	 - [Color changes](https://github.com/dtiefling/dshaders/assets/145703648/1ed9298a-fb63-4937-b1e0-d570e9a5febf)
-	 - [Color changes + Catmull-Rom](https://github.com/dtiefling/dshaders/assets/145703648/5d54a0b8-afd7-43db-b6da-caf2d189c89a)
-	 - ["Author's choice" (also no outlines without selections)](https://github.com/dtiefling/dshaders/assets/145703648/04eeb0ab-5834-4b7e-943a-4c8122cfaa0d)
- - BGEE 1.3 imitation:
-	 - Actual [BGEE 1.3 (obviously no mod)](https://github.com/dtiefling/dshaders/assets/145703648/5492e51e-4def-442c-8cf0-49c2b5c5c52e)
-	 - BGEE 1.3-like overly simple setup, which means
-	   [Catmull-Rom for sprites](https://github.com/dtiefling/dshaders/assets/145703648/8f028e21-80bf-4109-a732-810a8ccb14dc)
-	 - [Catmull-Rom everywhere](https://github.com/dtiefling/dshaders/assets/145703648/56d09666-076d-4390-8300-48f1e158ccfc)
-	 - And since the old games made it possible to adjust image properties,
-	   consider [Color changes + Catmull-Rom](https://github.com/dtiefling/dshaders/assets/145703648/5d54a0b8-afd7-43db-b6da-caf2d189c89a)
+Each image can be clicked for larger preview. The presented thumbnails are downscaled, thus way less meaningful than the images you can get by clicking.
 
-### Resources
+### Main component
+
+Installing the main component already indicates a change to how things are displayed. The intention was to make the changes slight. Compare two images on the left (BG2EE v2.6 with EET and nothing more) with two on the right (this mod with no specific config). Reworked outlines are roughly similar, but you can see a difference if you try to. Also - the original map rendered uses linear blending programatically rather than via sampler. This means that the default (non-Catmull-Rom) map rendering is more pixelated than BG2EE v2.6.
+[![BG2EE 2.6 (EET)](https://github.com/dtiefling/dshaders/assets/145703648/e1ac667b-6f03-43f5-83ca-2bc0d3f7708f)](https://github.com/dtiefling/dshaders/assets/145703648/98ad9575-078b-4a4a-8fd8-f7dbc6352749) [![BG2EE 2.6 (EET), selected](https://github.com/dtiefling/dshaders/assets/145703648/8f3bf409-808f-4f95-8a04-14b52b8a8fe3)](https://github.com/dtiefling/dshaders/assets/145703648/556169d6-f96f-4d9e-8266-951608767945) [![Mod without settings](https://github.com/dtiefling/dshaders/assets/145703648/43e51a7d-9bde-4fd3-9434-ed1bce0a65e1)](https://github.com/dtiefling/dshaders/assets/145703648/9149cc7f-d743-4e6f-8574-2cbd5058f5e4) [![Mod without settings, selected](https://github.com/dtiefling/dshaders/assets/145703648/1df282aa-b8ba-4469-9df5-ee332ccc4066)](https://github.com/dtiefling/dshaders/assets/145703648/929cdd0b-5b07-4e28-8268-1f43acaa99bd)
+
+### Catmull-Rom
+
+Catmull-Rom interponation is one of the key features of this mod. Top to bottom: no Catmull-Rom, Catmull-Rom for sprites only, Catmull-Rom everywhere. Extra images on the right also have no outlines, which I believe makes the C-R interpolation look as intended.
+[![Mod without settings](https://github.com/dtiefling/dshaders/assets/145703648/43e51a7d-9bde-4fd3-9434-ed1bce0a65e1)](https://github.com/dtiefling/dshaders/assets/145703648/9149cc7f-d743-4e6f-8574-2cbd5058f5e4)
+[![Catmull-Rom for sprites](https://github.com/dtiefling/dshaders/assets/145703648/a143c094-1393-4e2a-81a3-4fb02935f69f)](https://github.com/dtiefling/dshaders/assets/145703648/2fde0139-2855-407e-b278-ccc678acb138) [![Catmull-Rom for sprites, no outline](https://github.com/dtiefling/dshaders/assets/145703648/bcabe226-2f58-4e7e-9a53-eedbb19f2741)](https://github.com/dtiefling/dshaders/assets/145703648/f8c7ae7d-9347-42ac-abf7-50fa40e625e4)
+[![Catmull-Rom for all shaders](https://github.com/dtiefling/dshaders/assets/145703648/c74d8acb-a4f4-461e-8d7d-f4eb9de5c6a9)](https://github.com/dtiefling/dshaders/assets/145703648/86b909cd-ec98-4322-ba18-2d65aff1c375) [![Catmull-Rom for all shaders, no outline](https://github.com/dtiefling/dshaders/assets/145703648/1718701d-3a12-4b40-ac56-21dd451b0a20)](https://github.com/dtiefling/dshaders/assets/145703648/65f6b9ad-b5b6-478b-b03a-9addada6056c)
+
+### Color intensity
+
+Left to right: no adjustment, moderate adjustment, intense adjustment.
+[![Mod without settings](https://github.com/dtiefling/dshaders/assets/145703648/43e51a7d-9bde-4fd3-9434-ed1bce0a65e1)](https://github.com/dtiefling/dshaders/assets/145703648/9149cc7f-d743-4e6f-8574-2cbd5058f5e4) [![Moderate color intensity adjustment](https://github.com/dtiefling/dshaders/assets/145703648/dd050b29-8dfe-4bb9-aa08-665819cb3f95)](https://github.com/dtiefling/dshaders/assets/145703648/4bb13fca-8e47-4006-a8e5-f5afe1dbfc12) [![Intense color intensity adjustment](https://github.com/dtiefling/dshaders/assets/145703648/ec36ab61-3cf4-4fee-a6fa-a0a97bf21f76)](https://github.com/dtiefling/dshaders/assets/145703648/02dd88d0-7ac5-4202-90cd-449b50a888bd)
+
+### Sharpening
+
+Sharpening options from the installer: none, slight, "more".
+[![Mod without settings](https://github.com/dtiefling/dshaders/assets/145703648/43e51a7d-9bde-4fd3-9434-ed1bce0a65e1)](https://github.com/dtiefling/dshaders/assets/145703648/9149cc7f-d743-4e6f-8574-2cbd5058f5e4) [![Slight sharpening](https://github.com/dtiefling/dshaders/assets/145703648/3116ca48-2ae6-4f7d-b149-aec8bb36cb35)](https://github.com/dtiefling/dshaders/assets/145703648/ec342cf2-0a58-41ca-859c-bd18ddf4b846) [![More sharpening](https://github.com/dtiefling/dshaders/assets/145703648/5d359691-fba9-47c9-b253-756fdf16445f)](https://github.com/dtiefling/dshaders/assets/145703648/22daa272-88de-44ed-b4d3-d63af8589619)
+
+### Hue change
+
+Display of 5 degree warmer colors, no change to the hue, and 5 degree colder colors.
+[![Warmer colors](https://github.com/dtiefling/dshaders/assets/145703648/6181f6da-ffeb-45fa-a149-784d91019b03)](https://github.com/dtiefling/dshaders/assets/145703648/ea5b7b8a-79ef-430b-bd56-fd0e2ec296d6) [![Mod without settings](https://github.com/dtiefling/dshaders/assets/145703648/43e51a7d-9bde-4fd3-9434-ed1bce0a65e1)](https://github.com/dtiefling/dshaders/assets/145703648/9149cc7f-d743-4e6f-8574-2cbd5058f5e4) [![Colder colors](https://github.com/dtiefling/dshaders/assets/145703648/ccfed8c2-5d83-44ff-aac8-97cf2426b325)](https://github.com/dtiefling/dshaders/assets/145703648/a3d71927-f461-4d47-a775-4b2f5996529f)
+
+### Thinner selection circles
+
+Mod default vs 0.2.3 bug turned into an optional feature.
+[![Mod without settings](https://github.com/dtiefling/dshaders/assets/145703648/43e51a7d-9bde-4fd3-9434-ed1bce0a65e1)](https://github.com/dtiefling/dshaders/assets/145703648/9149cc7f-d743-4e6f-8574-2cbd5058f5e4) [![Mod without settings](https://github.com/dtiefling/dshaders/assets/145703648/cd315b0c-94b3-40d4-9b13-97b3ce2fb7c1)](https://github.com/dtiefling/dshaders/assets/145703648/ce5ce43c-35c7-4eda-9afe-fc90e7a4dd70)
+
+### BGEE 1.3
+
+Some peple out there miss BGEE 1.3. So let's compare the acutal BGEE 1.3 (left) with the mod preset [BGEE 1.3-like setup (Catmull-Rom everywhere)](#quick-menu) (right).
+[![BGEE 1.3, actual stuff](https://github.com/dtiefling/dshaders/assets/145703648/486814ce-fae9-4db5-81d5-ed603be74785)](https://github.com/dtiefling/dshaders/assets/145703648/c747015f-54ff-46a9-9fc4-54e19c2b3c8a) [![Mod setup that imitates BGEE 1.3](https://github.com/dtiefling/dshaders/assets/145703648/dfab3e24-565a-46f0-84fb-a9923f69237b)](https://github.com/dtiefling/dshaders/assets/145703648/03a9cea0-7493-4bc4-b413-933805fee4dd)
+
+### More complex setup
+
+It cannot be ommited that the actual beauty of this mod starts when you pick your options and parameters by your taste. I happen to use my own stuff. That's how [drunktiefling's choice](#quick-menu) looks like:
+[![drunktiefling's choice](https://github.com/dtiefling/dshaders/assets/145703648/980bcfb1-0a99-47a6-a6d4-8604957ecf05)](https://github.com/dtiefling/dshaders/assets/145703648/b4ee18e6-11cf-4708-a204-ae8c761c7961)
+
+## Resources
 
 * Infinity Engine from Baldur's Gate 2: Enhanced Edition v2.6.
   [Please support the original release.](https://www.gog.com/en/game/baldurs_gate_2_enhanced_edition)
