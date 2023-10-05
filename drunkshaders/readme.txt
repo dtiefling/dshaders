@@ -1,8 +1,3 @@
-
-
-
-
-
 # drunktiefling's shaders
 
 Readme last updated at version: *0.3.4*.
@@ -359,7 +354,8 @@ parameters with a text editor. Instead, the shaders will be optimized
 for the parameters that have been there, using
 [GLSL optimizer](https://github.com/jamienicol/glsl-optimizer) that was built
 specifically for this mod. The advantages include total elimination
-of conditional statements from the code of all shaders, which is already
+of conditional statements from the code of all shaders without outlines (some
+gometry code related to them is an exception from that rule), which is already
 an indication that they sould run faster.
 
 At the moment, there is no Mac OS X build, so this component works only
@@ -488,53 +484,43 @@ Each image can be clicked for larger preview. The presented thumbnails are downs
 ### Main component
 
 Installing the main component already indicates a change to how things are displayed. The intention was to make the changes slight. Compare two images on the left (BG2EE v2.6 with EET and nothing more) with two on the right (this mod with no specific config). Reworked outlines are roughly similar, but you can see a difference if you try to. Also - the original map rendered uses linear blending programatically rather than via sampler. This means that the default (non-Catmull-Rom) map rendering is more pixelated than BG2EE v2.6.
-
 [![BG2EE 2.6 (EET)](https://github.com/dtiefling/dshaders/assets/145703648/e1ac667b-6f03-43f5-83ca-2bc0d3f7708f)](https://github.com/dtiefling/dshaders/assets/145703648/98ad9575-078b-4a4a-8fd8-f7dbc6352749) [![BG2EE 2.6 (EET), selected](https://github.com/dtiefling/dshaders/assets/145703648/8f3bf409-808f-4f95-8a04-14b52b8a8fe3)](https://github.com/dtiefling/dshaders/assets/145703648/556169d6-f96f-4d9e-8266-951608767945) [![Mod without settings](https://github.com/dtiefling/dshaders/assets/145703648/43e51a7d-9bde-4fd3-9434-ed1bce0a65e1)](https://github.com/dtiefling/dshaders/assets/145703648/9149cc7f-d743-4e6f-8574-2cbd5058f5e4) [![Mod without settings, selected](https://github.com/dtiefling/dshaders/assets/145703648/1df282aa-b8ba-4469-9df5-ee332ccc4066)](https://github.com/dtiefling/dshaders/assets/145703648/929cdd0b-5b07-4e28-8268-1f43acaa99bd)
 
 ### Catmull-Rom
 
 Catmull-Rom interponation is one of the key features of this mod. Top to bottom: no Catmull-Rom, Catmull-Rom for sprites only, Catmull-Rom everywhere. Extra images on the right also have no outlines, which I believe makes the C-R interpolation look as intended.
-
 [![Mod without settings](https://github.com/dtiefling/dshaders/assets/145703648/43e51a7d-9bde-4fd3-9434-ed1bce0a65e1)](https://github.com/dtiefling/dshaders/assets/145703648/9149cc7f-d743-4e6f-8574-2cbd5058f5e4)
-
 [![Catmull-Rom for sprites](https://github.com/dtiefling/dshaders/assets/145703648/a143c094-1393-4e2a-81a3-4fb02935f69f)](https://github.com/dtiefling/dshaders/assets/145703648/2fde0139-2855-407e-b278-ccc678acb138) [![Catmull-Rom for sprites, no outline](https://github.com/dtiefling/dshaders/assets/145703648/bcabe226-2f58-4e7e-9a53-eedbb19f2741)](https://github.com/dtiefling/dshaders/assets/145703648/f8c7ae7d-9347-42ac-abf7-50fa40e625e4)
-
 [![Catmull-Rom for all shaders](https://github.com/dtiefling/dshaders/assets/145703648/c74d8acb-a4f4-461e-8d7d-f4eb9de5c6a9)](https://github.com/dtiefling/dshaders/assets/145703648/86b909cd-ec98-4322-ba18-2d65aff1c375) [![Catmull-Rom for all shaders, no outline](https://github.com/dtiefling/dshaders/assets/145703648/1718701d-3a12-4b40-ac56-21dd451b0a20)](https://github.com/dtiefling/dshaders/assets/145703648/65f6b9ad-b5b6-478b-b03a-9addada6056c)
 
 ### Color intensity
 
 Left to right: no adjustment, moderate adjustment, intense adjustment.
-
 [![Mod without settings](https://github.com/dtiefling/dshaders/assets/145703648/43e51a7d-9bde-4fd3-9434-ed1bce0a65e1)](https://github.com/dtiefling/dshaders/assets/145703648/9149cc7f-d743-4e6f-8574-2cbd5058f5e4) [![Moderate color intensity adjustment](https://github.com/dtiefling/dshaders/assets/145703648/dd050b29-8dfe-4bb9-aa08-665819cb3f95)](https://github.com/dtiefling/dshaders/assets/145703648/4bb13fca-8e47-4006-a8e5-f5afe1dbfc12) [![Intense color intensity adjustment](https://github.com/dtiefling/dshaders/assets/145703648/ec36ab61-3cf4-4fee-a6fa-a0a97bf21f76)](https://github.com/dtiefling/dshaders/assets/145703648/02dd88d0-7ac5-4202-90cd-449b50a888bd)
 
 ### Sharpening
 
 Sharpening options from the installer: none, slight, "more".
-
 [![Mod without settings](https://github.com/dtiefling/dshaders/assets/145703648/43e51a7d-9bde-4fd3-9434-ed1bce0a65e1)](https://github.com/dtiefling/dshaders/assets/145703648/9149cc7f-d743-4e6f-8574-2cbd5058f5e4) [![Slight sharpening](https://github.com/dtiefling/dshaders/assets/145703648/3116ca48-2ae6-4f7d-b149-aec8bb36cb35)](https://github.com/dtiefling/dshaders/assets/145703648/ec342cf2-0a58-41ca-859c-bd18ddf4b846) [![More sharpening](https://github.com/dtiefling/dshaders/assets/145703648/5d359691-fba9-47c9-b253-756fdf16445f)](https://github.com/dtiefling/dshaders/assets/145703648/22daa272-88de-44ed-b4d3-d63af8589619)
 
 ### Hue change
 
 Display of 5 degree warmer colors, no change to the hue, and 5 degree colder colors.
-
 [![Warmer colors](https://github.com/dtiefling/dshaders/assets/145703648/6181f6da-ffeb-45fa-a149-784d91019b03)](https://github.com/dtiefling/dshaders/assets/145703648/ea5b7b8a-79ef-430b-bd56-fd0e2ec296d6) [![Mod without settings](https://github.com/dtiefling/dshaders/assets/145703648/43e51a7d-9bde-4fd3-9434-ed1bce0a65e1)](https://github.com/dtiefling/dshaders/assets/145703648/9149cc7f-d743-4e6f-8574-2cbd5058f5e4) [![Colder colors](https://github.com/dtiefling/dshaders/assets/145703648/ccfed8c2-5d83-44ff-aac8-97cf2426b325)](https://github.com/dtiefling/dshaders/assets/145703648/a3d71927-f461-4d47-a775-4b2f5996529f)
 
 ### Thinner selection circles
 
 Mod default vs 0.2.3 bug turned into an optional feature.
-
 [![Mod without settings](https://github.com/dtiefling/dshaders/assets/145703648/43e51a7d-9bde-4fd3-9434-ed1bce0a65e1)](https://github.com/dtiefling/dshaders/assets/145703648/9149cc7f-d743-4e6f-8574-2cbd5058f5e4) [![Mod without settings](https://github.com/dtiefling/dshaders/assets/145703648/cd315b0c-94b3-40d4-9b13-97b3ce2fb7c1)](https://github.com/dtiefling/dshaders/assets/145703648/ce5ce43c-35c7-4eda-9afe-fc90e7a4dd70)
 
 ### BGEE 1.3
 
 Some peple out there miss BGEE 1.3. So let's compare the acutal BGEE 1.3 (left) with the mod preset [BGEE 1.3-like setup (Catmull-Rom everywhere)](#quick-menu) (right).
-
 [![BGEE 1.3, actual stuff](https://github.com/dtiefling/dshaders/assets/145703648/486814ce-fae9-4db5-81d5-ed603be74785)](https://github.com/dtiefling/dshaders/assets/145703648/c747015f-54ff-46a9-9fc4-54e19c2b3c8a) [![Mod setup that imitates BGEE 1.3](https://github.com/dtiefling/dshaders/assets/145703648/dfab3e24-565a-46f0-84fb-a9923f69237b)](https://github.com/dtiefling/dshaders/assets/145703648/03a9cea0-7493-4bc4-b413-933805fee4dd)
 
 ### More complex setup
 
 It cannot be ommited that the actual beauty of this mod starts when you pick your options and parameters by your taste. I happen to use my own stuff. That's how [drunktiefling's choice](#quick-menu) looks like:
-
 [![drunktiefling's choice](https://github.com/dtiefling/dshaders/assets/145703648/980bcfb1-0a99-47a6-a6d4-8604957ecf05)](https://github.com/dtiefling/dshaders/assets/145703648/b4ee18e6-11cf-4708-a204-ae8c761c7961)
 
 ## Resources
@@ -583,7 +569,7 @@ It cannot be ommited that the actual beauty of this mod starts when you pick you
 	 - [GCC](https://gcc.gnu.org/),
 	 - [MSYS2](https://www.msys2.org/),
 	 - [MinGW](https://www.mingw-w64.org/),
-	 - [CMake](https://cmake.org/).
+	 - [CMake](about:blank).
 * [Pluma](https://github.com/mate-desktop/pluma) -
   The [MATE](https://mate-desktop.org/) text editor.
 
