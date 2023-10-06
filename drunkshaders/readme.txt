@@ -1,6 +1,7 @@
+
 # drunktiefling's shaders
 
-Readme last updated at version: *0.3.4*.
+Readme last updated at version: *0.3.5*.
 
 This mod aims to use more consistent color operations, sharpening
 and alternative scaling filters via shader files introduced in BG(2)EE.
@@ -108,7 +109,7 @@ Then extract it in the game installation directory.
 
 Current versions are shipped with WeiDU for all supported platforms.
 For example, on Windows you would have to execute `setup-drunkshaders.exe`
-file and answer a few questions. Proper steps for Linux and Mac OS X are
+file and answer a few questions. Proper steps for Linux and macOS are
 analogous, taken that files you might want to run don't have `.exe`
 at the end of the name.
 
@@ -358,8 +359,9 @@ of conditional statements from the code of all shaders without outlines (some
 gometry code related to them is an exception from that rule), which is already
 an indication that they sould run faster.
 
-At the moment, there is no Mac OS X build, so this component works only
-on Windows and Linux (either x86 or x86_64 for either platform).
+At the moment, the included macOS build is based on the
+[original branch](https://github.com/aras-p/glsl-optimizer) of GLSL optimizer,
+because of missing symbols from the more recent code.
 
  1. Process shaders with GLSL Optimizer
     [WARINIG: manual editing won't be possible after this step]

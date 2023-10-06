@@ -1,7 +1,7 @@
 BACKUP ~drunkshaders/backup~
 
 AUTHOR ~drunktiefling~
-VERSION ~0.3.4~
+VERSION ~0.3.5~
 README ~drunkshaders/readme.txt~
 
 
@@ -380,27 +380,23 @@ END
 BEGIN ~Process shaders with GLSL Optimizer [WARINIG: manual editing won't be possible after this step]~ DESIGNATED 9005
 SUBCOMPONENT ~GLSL Optimization~
 REQUIRE_COMPONENT ~drunkshaders.tp2~ 1000 ~This requires the main component.~
-ACTION_IF NOT (~%WEIDU_OS%~ STRING_EQUAL_CASE ~osx~) BEGIN
-	LAF ~GET_TOOL_BINARY~ STR_VAR tool_name = ~glslopt~ RET tool_binary END
-	ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ ~override/fpyuvgry.glsl~ BEGIN
-		DELETE ~%MOD_FOLDER%/weidu_external/workspace/glslopt_out/%shader%~
-		COPY_EXISTING ~%shader%~ ~%shader%~
-			WRITE_ASCII 0 ~#version 130 /* ~
-		BUT_ONLY_IF_IT_CHANGES
-		LAF EXECUTE_TOOL
-			STR_VAR
-				tool_binary = EVAL ~%tool_binary%~
-				arg_0       = EVAL ~-1~
-				arg_1       = EVAL ~-f~
-				arg_2       = EVAL ~%shader%~
-				arg_3       = EVAL ~%MOD_FOLDER%/weidu_external/workspace/glslopt_out/%shader%~
-		END
-		COPY_EXISTING ~%MOD_FOLDER%/weidu_external/workspace/glslopt_out/%shader%~ ~%shader%~
-			REPLACE_TEXTUALLY ~#version 130~ ~~
-			REPLACE_TEXTUALLY ~ / 0.1)~ ~ * 10.0)~
-			REPLACE_TEXTUALLY ~ / 0.002)~ ~ * 500.0)~
-		BUT_ONLY_IF_IT_CHANGES
+LAF ~GET_TOOL_BINARY~ STR_VAR tool_name = ~glslopt~ RET tool_binary END
+ACTION_FOR_EACH shader IN ~override/fpfont.glsl~ ~override/fpdraw.glsl~ ~override/fptone.glsl~ ~override/fpseam.glsl~ ~override/fpsprite.glsl~ ~override/fpselect.glsl~ ~override/fpyuv.glsl~ ~override/fpyuvgry.glsl~ BEGIN
+	DELETE ~%MOD_FOLDER%/weidu_external/workspace/glslopt_out/%shader%~
+	COPY_EXISTING ~%shader%~ ~%shader%~
+		WRITE_ASCII 0 ~#version 130 /* ~
+	BUT_ONLY_IF_IT_CHANGES
+	LAF EXECUTE_TOOL
+		STR_VAR
+			tool_binary = EVAL ~%tool_binary%~
+			arg_0       = EVAL ~-1~
+			arg_1       = EVAL ~-f~
+			arg_2       = EVAL ~%shader%~
+			arg_3       = EVAL ~%MOD_FOLDER%/weidu_external/workspace/glslopt_out/%shader%~
 	END
-END ELSE BEGIN
-	PRINT ~Platform not supported. Doing nothing.~
+	COPY_EXISTING ~%MOD_FOLDER%/weidu_external/workspace/glslopt_out/%shader%~ ~%shader%~
+		REPLACE_TEXTUALLY ~#version 130~ ~~
+		REPLACE_TEXTUALLY ~ / 0.1)~ ~ * 10.0)~
+		REPLACE_TEXTUALLY ~ / 0.002)~ ~ * 500.0)~
+	BUT_ONLY_IF_IT_CHANGES
 END

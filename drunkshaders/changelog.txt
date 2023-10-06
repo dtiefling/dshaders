@@ -1,3 +1,7 @@
+(0.3.5)
+Slightly improved formula for interpixel outline curve approximation.
+Added macOS build of glslopt.
+
 (0.3.4)
 MAJOR readme update.
 Fixed default outlines when no component is chosen.

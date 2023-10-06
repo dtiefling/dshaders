@@ -326,7 +326,7 @@ mediump vec2 uhOutlineData(in int radius, in ivec2 uhPosUb, in mediump vec2 uhPo
 			{
 				continue;
 			}
-			mediump float lineA0 = a00 - 0.0625;
+			mediump float lineA0 = (a00 * 3 + a01 + a10 - a11) * 0.25 - 0.0625;
 			mediump float lineAX = (a01 + a11 - a00 - a10) * 0.5;
 			mediump float lineBX = (a10 + a11 - a00 - a01) * 0.5;
 			mediump vec2 segEnds[2];
